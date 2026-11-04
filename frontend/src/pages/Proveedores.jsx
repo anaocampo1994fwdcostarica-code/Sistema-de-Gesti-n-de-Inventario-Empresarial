@@ -3,6 +3,7 @@ import ConfirmDialog from '../components/ConfirmDialog'
 import { Alert, EmptyState } from '../components/Feedback'
 import Loading from '../components/Loading'
 import Modal from '../components/Modal'
+import Icon from '../components/Icon'
 import { createProveedor, deleteProveedor, getProveedores, updateProveedor } from '../services/proveedorService'
 
 const emptyForm = { nombre: '', telefono: '', correo: '' }
@@ -53,11 +54,11 @@ export default function Proveedores() {
 
   return (
     <div className="page-stack">
-      <div className="page-actions"><div><span className="eyebrow">ABASTECIMIENTO</span><h2>Directorio de proveedores</h2><p>{items.length} {items.length === 1 ? 'proveedor registrado' : 'proveedores registrados'}</p></div><button className="button button--primary" onClick={() => openForm()}>+ Nuevo proveedor</button></div>
+      <div className="page-actions"><div><span className="eyebrow">ABASTECIMIENTO</span><h2>Directorio de proveedores</h2><p>{items.length} {items.length === 1 ? 'proveedor registrado' : 'proveedores registrados'}</p></div><button className="button button--primary" onClick={() => openForm()}><Icon name="plus" size={17} />Nuevo proveedor</button></div>
       {error && <Alert onClose={() => setError('')}>{error}</Alert>}{success && <Alert type="success" onClose={() => setSuccess('')}>{success}</Alert>}
       <section className="panel table-panel">
-        {loading ? <Loading /> : items.length === 0 ? <EmptyState icon="♙" title="No hay proveedores" description="Registra un proveedor para asociarlo con tus productos." action={<button className="button button--primary" onClick={() => openForm()}>Crear proveedor</button>} /> : (
-          <div className="table-wrap"><table><thead><tr><th>Proveedor</th><th>Teléfono</th><th>Correo electrónico</th><th className="cell-actions">Acciones</th></tr></thead><tbody>{items.map((item) => <tr key={item.id}><td><strong>{item.nombre}</strong></td><td>{item.telefono || <span className="muted">No indicado</span>}</td><td>{item.correo ? <a href={`mailto:${item.correo}`}>{item.correo}</a> : <span className="muted">No indicado</span>}</td><td className="cell-actions"><button className="table-action" onClick={() => openForm(item)}>Editar</button><button className="table-action table-action--danger" onClick={() => setDeleting(item)}>Eliminar</button></td></tr>)}</tbody></table></div>
+        {loading ? <Loading /> : items.length === 0 ? <EmptyState icon="supplier" title="No hay proveedores" description="Registra un proveedor para asociarlo con tus productos." action={<button className="button button--primary" onClick={() => openForm()}><Icon name="plus" size={17} />Crear proveedor</button>} /> : (
+          <div className="table-wrap"><table><thead><tr><th scope="col">Proveedor</th><th scope="col">Teléfono</th><th scope="col">Correo electrónico</th><th scope="col" className="cell-actions">Acciones</th></tr></thead><tbody>{items.map((item) => <tr key={item.id}><td data-label="Proveedor"><strong>{item.nombre}</strong></td><td data-label="Teléfono" className="mono-value">{item.telefono || <span className="muted">No indicado</span>}</td><td data-label="Correo">{item.correo ? <a href={`mailto:${item.correo}`}>{item.correo}</a> : <span className="muted">No indicado</span>}</td><td data-label="Acciones" className="cell-actions"><button className="table-action" onClick={() => openForm(item)} aria-label={`Editar ${item.nombre}`}><Icon name="edit" size={15} />Editar</button><button className="table-action table-action--danger" onClick={() => setDeleting(item)} aria-label={`Eliminar ${item.nombre}`}><Icon name="trash" size={15} />Eliminar</button></td></tr>)}</tbody></table></div>
         )}
       </section>
       <Modal open={Boolean(editing)} title={editing?.id ? 'Editar proveedor' : 'Nuevo proveedor'} subtitle="Datos de contacto y abastecimiento." onClose={() => !saving && setEditing(null)}>
