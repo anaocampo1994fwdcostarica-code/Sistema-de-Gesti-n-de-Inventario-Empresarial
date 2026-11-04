@@ -3,6 +3,7 @@ import ConfirmDialog from '../components/ConfirmDialog'
 import { Alert, EmptyState } from '../components/Feedback'
 import Loading from '../components/Loading'
 import Modal from '../components/Modal'
+import Icon from '../components/Icon'
 import { getCategorias } from '../services/categoriaService'
 import { createProducto, deleteProducto, getProductos, updateProducto } from '../services/productoService'
 import { getProveedores } from '../services/proveedorService'
@@ -67,12 +68,12 @@ export default function Productos() {
 
   return (
     <div className="page-stack">
-      <div className="page-actions"><div><span className="eyebrow">INVENTARIO</span><h2>Catálogo de productos</h2><p>{items.length} {items.length === 1 ? 'producto registrado' : 'productos registrados'}</p></div><button className="button button--primary" onClick={() => openForm()} disabled={missingRelations}>+ Nuevo producto</button></div>
+      <div className="page-actions"><div><span className="eyebrow">INVENTARIO</span><h2>Catálogo de productos</h2><p>{items.length} {items.length === 1 ? 'producto registrado' : 'productos registrados'}</p></div><button className="button button--primary" onClick={() => openForm()} disabled={missingRelations}><Icon name="plus" size={17} />Nuevo producto</button></div>
       {missingRelations && !loading && <Alert>Debes registrar al menos una categoría y un proveedor antes de crear productos.</Alert>}
       {error && <Alert onClose={() => setError('')}>{error}</Alert>}{success && <Alert type="success" onClose={() => setSuccess('')}>{success}</Alert>}
       <section className="panel table-panel">
-        {loading ? <Loading /> : items.length === 0 ? <EmptyState icon="▣" title="No hay productos" description="Los productos registrados aparecerán aquí con su categoría y proveedor." action={!missingRelations ? <button className="button button--primary" onClick={() => openForm()}>Crear producto</button> : null} /> : (
-          <div className="table-wrap"><table><thead><tr><th>Producto</th><th>Código</th><th>Precio</th><th>Cantidad</th><th>Categoría</th><th>Proveedor</th><th className="cell-actions">Acciones</th></tr></thead><tbody>{items.map((item) => <tr key={item.id}><td><strong>{item.nombre}</strong></td><td><span className="code-badge">{item.codigo}</span></td><td>{currency.format(Number(item.precio))}</td><td><span className={`stock-badge ${Number(item.cantidad) === 0 ? 'stock-badge--empty' : ''}`}>{item.cantidad}</span></td><td>{item.categoria?.nombre || '—'}</td><td>{item.proveedor?.nombre || '—'}</td><td className="cell-actions"><button className="table-action" onClick={() => openForm(item)}>Editar</button><button className="table-action table-action--danger" onClick={() => setDeleting(item)}>Eliminar</button></td></tr>)}</tbody></table></div>
+        {loading ? <Loading /> : items.length === 0 ? <EmptyState icon="product" title="No hay productos" description="Los productos registrados aparecerán aquí con su categoría y proveedor." action={!missingRelations ? <button className="button button--primary" onClick={() => openForm()}><Icon name="plus" size={17} />Crear producto</button> : null} /> : (
+          <div className="table-wrap"><table><thead><tr><th scope="col">Producto</th><th scope="col">Código</th><th scope="col">Precio</th><th scope="col">Cantidad</th><th scope="col">Categoría</th><th scope="col">Proveedor</th><th scope="col" className="cell-actions">Acciones</th></tr></thead><tbody>{items.map((item) => <tr key={item.id}><td data-label="Producto"><strong>{item.nombre}</strong></td><td data-label="Código"><span className="code-badge">{item.codigo}</span></td><td data-label="Precio" className="mono-value">{currency.format(Number(item.precio))}</td><td data-label="Cantidad"><span className={`stock-badge ${Number(item.cantidad) === 0 ? 'stock-badge--empty' : ''}`}>{item.cantidad}</span></td><td data-label="Categoría">{item.categoria?.nombre || '—'}</td><td data-label="Proveedor">{item.proveedor?.nombre || '—'}</td><td data-label="Acciones" className="cell-actions"><button className="table-action" onClick={() => openForm(item)} aria-label={`Editar ${item.nombre}`}><Icon name="edit" size={15} />Editar</button><button className="table-action table-action--danger" onClick={() => setDeleting(item)} aria-label={`Eliminar ${item.nombre}`}><Icon name="trash" size={15} />Eliminar</button></td></tr>)}</tbody></table></div>
         )}
       </section>
       <Modal open={Boolean(editing)} title={editing?.id ? 'Editar producto' : 'Nuevo producto'} subtitle="Información comercial y existencias." onClose={() => !saving && setEditing(null)}>

@@ -306,3 +306,4 @@ Los códigos HTTP utilizados son `200`, `201`, `400`, `404`, `409` y `500`.
 - [Justificación académica](docs/justificacion.md)
 - [Diagrama entidad-relación](docs/diagrama-er.drawio)
 - [Guía de evidencias](docs/evidencias/README.md)
+- [Entregables completos del Día 1](docs/evidencias/Entregables_Dia_1_Inventario_Empresarial_COMPLETO.docx)

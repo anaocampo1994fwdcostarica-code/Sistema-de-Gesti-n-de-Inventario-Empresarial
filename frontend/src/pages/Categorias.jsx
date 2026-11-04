@@ -3,6 +3,7 @@ import ConfirmDialog from '../components/ConfirmDialog'
 import { Alert, EmptyState } from '../components/Feedback'
 import Loading from '../components/Loading'
 import Modal from '../components/Modal'
+import Icon from '../components/Icon'
 import { createCategoria, deleteCategoria, getCategorias, updateCategoria } from '../services/categoriaService'
 
 const emptyForm = { nombre: '', descripcion: '' }
@@ -53,11 +54,11 @@ export default function Categorias() {
 
   return (
     <div className="page-stack">
-      <div className="page-actions"><div><span className="eyebrow">CATÁLOGO</span><h2>Listado de categorías</h2><p>{items.length} {items.length === 1 ? 'categoría registrada' : 'categorías registradas'}</p></div><button className="button button--primary" onClick={() => openForm()}>+ Nueva categoría</button></div>
+      <div className="page-actions"><div><span className="eyebrow">CATÁLOGO</span><h2>Listado de categorías</h2><p>{items.length} {items.length === 1 ? 'categoría registrada' : 'categorías registradas'}</p></div><button className="button button--primary" onClick={() => openForm()}><Icon name="plus" size={17} />Nueva categoría</button></div>
       {error && <Alert onClose={() => setError('')}>{error}</Alert>}{success && <Alert type="success" onClose={() => setSuccess('')}>{success}</Alert>}
       <section className="panel table-panel">
-        {loading ? <Loading /> : items.length === 0 ? <EmptyState icon="◫" title="No hay categorías" description="Crea la primera categoría para organizar tus productos." action={<button className="button button--primary" onClick={() => openForm()}>Crear categoría</button>} /> : (
-          <div className="table-wrap"><table><thead><tr><th>Nombre</th><th>Descripción</th><th>Fecha de creación</th><th className="cell-actions">Acciones</th></tr></thead><tbody>{items.map((item) => <tr key={item.id}><td><strong>{item.nombre}</strong></td><td className="muted">{item.descripcion || 'Sin descripción'}</td><td className="muted">{new Date(item.createdAt).toLocaleDateString('es-CR')}</td><td className="cell-actions"><button className="table-action" onClick={() => openForm(item)}>Editar</button><button className="table-action table-action--danger" onClick={() => setDeleting(item)}>Eliminar</button></td></tr>)}</tbody></table></div>
+        {loading ? <Loading /> : items.length === 0 ? <EmptyState icon="category" title="No hay categorías" description="Crea la primera categoría para organizar tus productos." action={<button className="button button--primary" onClick={() => openForm()}><Icon name="plus" size={17} />Crear categoría</button>} /> : (
+          <div className="table-wrap"><table><thead><tr><th scope="col">Nombre</th><th scope="col">Descripción</th><th scope="col">Fecha de creación</th><th scope="col" className="cell-actions">Acciones</th></tr></thead><tbody>{items.map((item) => <tr key={item.id}><td data-label="Nombre"><strong>{item.nombre}</strong></td><td data-label="Descripción" className="muted">{item.descripcion || 'Sin descripción'}</td><td data-label="Creación" className="muted mono-value">{new Date(item.createdAt).toLocaleDateString('es-CR')}</td><td data-label="Acciones" className="cell-actions"><button className="table-action" onClick={() => openForm(item)} aria-label={`Editar ${item.nombre}`}><Icon name="edit" size={15} />Editar</button><button className="table-action table-action--danger" onClick={() => setDeleting(item)} aria-label={`Eliminar ${item.nombre}`}><Icon name="trash" size={15} />Eliminar</button></td></tr>)}</tbody></table></div>
         )}
       </section>
       <Modal open={Boolean(editing)} title={editing?.id ? 'Editar categoría' : 'Nueva categoría'} subtitle="Completa la información de la categoría." onClose={() => !saving && setEditing(null)}>
