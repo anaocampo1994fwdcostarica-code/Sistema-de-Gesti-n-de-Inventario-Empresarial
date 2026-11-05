@@ -1,54 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Alert } from '../components/Feedback'
-import Loading from '../components/Loading'
 import Icon from '../components/Icon'
+import Loading from '../components/Loading'
 import { getCategorias } from '../services/categoriaService'
 import { getProductos } from '../services/productoService'
 import { getProveedores } from '../services/proveedorService'
-
-const cards = [
-  { key: 'productos', label: 'Productos registrados', icon: 'product', accent: 'petroleum' },
-  { key: 'categorias', label: 'Categorías activas', icon: 'category', accent: 'orange' },
-  { key: 'proveedores', label: 'Proveedores', icon: 'supplier', accent: 'gold' },
-  { key: 'unidades', label: 'Unidades disponibles', icon: 'units', accent: 'petroleum' },
-]
-
-export default function Dashboard() {
-  const [data, setData] = useState(null)
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    let active = true
-    Promise.all([getProductos(), getCategorias(), getProveedores()])
-      .then(([productos, categorias, proveedores]) => {
-        if (!active) return
-        setData({ productos: productos.length, categorias: categorias.length, proveedores: proveedores.length, unidades: productos.reduce((total, producto) => total + Number(producto.cantidad || 0), 0) })
-      })
-      .catch((requestError) => { if (active) setError(requestError.message) })
-    return () => { active = false }
-  }, [])
-
-  return (
-    <div className="page-stack">
-      <section className="welcome-panel">
-        <div><span className="eyebrow">PANEL DE CONTROL</span><h2>Control preciso. Decisiones claras.</h2><p>Una vista consolidada de los datos operativos registrados en tu inventario.</p></div>
-        <Link to="/productos" className="button button--primary">Gestionar productos <Icon name="arrow" size={17} /></Link>
-      </section>
-      {error && <Alert onClose={() => setError('')}>{error}</Alert>}
-      {!data && !error ? <Loading /> : data && (
-        <section className="stat-grid" aria-label="Indicadores del inventario">
-          {cards.map((card) => <article className={`stat-card stat-card--${card.accent}`} key={card.key}><span className="stat-card__icon"><Icon name={card.icon} size={21} /></span><div><p>{card.label}</p><strong>{data[card.key].toLocaleString('es-CR')}</strong></div></article>)}
-        </section>
-      )}
-      <section className="panel">
-        <div className="panel__header"><div><span className="eyebrow">ACCESOS RÁPIDOS</span><h2>Administración</h2></div></div>
-        <div className="quick-grid">
-          <Link to="/productos" className="quick-card"><span><Icon name="product" /></span><div><h3>Productos</h3><p>Existencias, códigos y precios</p></div><Icon name="arrow" size={18} /></Link>
-          <Link to="/categorias" className="quick-card"><span><Icon name="category" /></span><div><h3>Categorías</h3><p>Organiza tu catálogo</p></div><Icon name="arrow" size={18} /></Link>
-          <Link to="/proveedores" className="quick-card"><span><Icon name="supplier" /></span><div><h3>Proveedores</h3><p>Gestiona tus contactos</p></div><Icon name="arrow" size={18} /></Link>
-        </div>
-      </section>
-    </div>
-  )
-}
+import { bodegasApi, clientesApi, comprasApi, existenciasApi, ventasApi } from '../services/inventoryService'
+const cards=[['productos','Productos','product'],['categorias','Categorías','category'],['proveedores','Proveedores','supplier'],['clientes','Clientes','units'],['bodegas','Bodegas','category'],['unidades','Unidades disponibles','units'],['compras','Compras registradas','supplier'],['ventas','Ventas registradas','product']]
+export default function Dashboard(){const[data,setData]=useState(null);const[error,setError]=useState('');useEffect(()=>{let active=true;Promise.all([getProductos(),getCategorias(),getProveedores(),clientesApi.list(),bodegasApi.list(),existenciasApi.list(),comprasApi.list(),ventasApi.list()]).then(([p,c,pr,cl,b,e,co,v])=>active&&setData({productos:p.length,categorias:c.length,proveedores:pr.length,clientes:cl.length,bodegas:b.length,unidades:e.reduce((n,x)=>n+Number(x.cantidad||0),0),compras:co.length,ventas:v.length})).catch(x=>active&&setError(x.message));return()=>{active=false}},[]);return <div className="page-stack"><section className="welcome-panel"><div><span className="eyebrow">PANEL DE CONTROL</span><h2>Control preciso. Decisiones claras.</h2><p>Indicadores calculados con información real del sistema.</p></div><Link to="/movimientos" className="button button--primary">Registrar movimiento <Icon name="arrow" size={17}/></Link></section>{error&&<Alert>{error}</Alert>}{!data&&!error?<Loading/>:data&&<section className="stat-grid">{cards.map(([key,label,icon],i)=><article className={`stat-card stat-card--${i%3===1?'orange':i%3===2?'gold':'petroleum'}`} key={key}><span className="stat-card__icon"><Icon name={icon} size={21}/></span><div><p>{label}</p><strong>{data[key].toLocaleString('es-CR')}</strong></div></article>)}</section>}<section className="panel"><div className="panel__header"><h2>Accesos operativos</h2></div><div className="quick-grid"><Link to="/compras" className="quick-card"><span><Icon name="supplier"/></span><div><h3>Compras</h3><p>Recepción de inventario</p></div></Link><Link to="/ventas" className="quick-card"><span><Icon name="product"/></span><div><h3>Ventas</h3><p>Salidas a clientes</p></div></Link><Link to="/existencias" className="quick-card"><span><Icon name="units"/></span><div><h3>Existencias</h3><p>Disponibilidad por ubicación</p></div></Link></div></section></div>}

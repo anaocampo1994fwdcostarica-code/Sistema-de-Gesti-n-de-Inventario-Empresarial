@@ -60,9 +60,14 @@ module.exports = (sequelize, DataTypes) => {
     { tableName: 'productos' },
   );
 
-  Producto.associate = ({ Categoria, Proveedor }) => {
+  Producto.associate = ({ Categoria, Proveedor, Existencia, MovimientoInventario, DetalleCompra, DetalleVenta, AjusteInventario }) => {
     Producto.belongsTo(Categoria, { foreignKey: 'categoriaId', as: 'categoria' });
     Producto.belongsTo(Proveedor, { foreignKey: 'proveedorId', as: 'proveedor' });
+    Producto.hasMany(Existencia, { foreignKey: 'productoId', as: 'existencias' });
+    Producto.hasMany(MovimientoInventario, { foreignKey: 'productoId', as: 'movimientosInventario' });
+    Producto.hasMany(DetalleCompra, { foreignKey: 'productoId', as: 'detallesCompra' });
+    Producto.hasMany(DetalleVenta, { foreignKey: 'productoId', as: 'detallesVenta' });
+    Producto.hasMany(AjusteInventario, { foreignKey: 'productoId', as: 'ajustesInventario' });
   };
 
   return Producto;

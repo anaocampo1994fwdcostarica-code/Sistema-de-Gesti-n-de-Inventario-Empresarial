@@ -9,12 +9,13 @@ import '@fontsource/plus-jakarta-sans/800.css'
 import '@fontsource/jetbrains-mono/500.css'
 import '@fontsource/jetbrains-mono/600.css'
 import App from './App.jsx'
+import AuthProvider from './contexts/AuthContext.jsx'
 import './styles/global.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider><App /></AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 )

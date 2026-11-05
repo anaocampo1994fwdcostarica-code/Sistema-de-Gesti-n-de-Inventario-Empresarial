@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const { Categoria, Producto, Proveedor } = require('../models');
+const { createProductWithInitialStock } = require('../services/productoService');
 const {
   ApiError,
   assertBody,
@@ -9,6 +10,7 @@ const {
 } = require('../middlewares/validation');
 
 const fields = ['nombre', 'codigo', 'precio', 'cantidad', 'categoriaId', 'proveedorId'];
+const createFields = [...fields, 'ubicacionId', 'tipoMovimientoId'];
 const includeRelations = [
   { model: Categoria, as: 'categoria', attributes: ['id', 'nombre'] },
   { model: Proveedor, as: 'proveedor', attributes: ['id', 'nombre'] },
@@ -32,7 +34,7 @@ const validateQuantity = (value) => {
 };
 
 const buildData = (body, isUpdate = false) => {
-  assertBody(body, fields, { requireAtLeastOne: isUpdate });
+  assertBody(body, isUpdate ? fields : createFields, { requireAtLeastOne: isUpdate });
   if (!isUpdate) assertRequired(body, fields);
 
   const data = {};
@@ -46,6 +48,8 @@ const buildData = (body, isUpdate = false) => {
   if (body.proveedorId !== undefined) {
     data.proveedorId = assertPositiveInteger(body.proveedorId, 'proveedorId');
   }
+  if (!isUpdate && body.ubicacionId !== undefined) data.ubicacionId = assertPositiveInteger(body.ubicacionId, 'ubicacionId');
+  if (!isUpdate && body.tipoMovimientoId !== undefined) data.tipoMovimientoId = assertPositiveInteger(body.tipoMovimientoId, 'tipoMovimientoId');
   return data;
 };
 
@@ -77,8 +81,10 @@ const ensureRelationsExist = async (data) => {
 exports.create = async (req, res, next) => {
   try {
     const data = buildData(req.body);
+    if (data.cantidad > 0 && (!data.ubicacionId || !data.tipoMovimientoId)) throw new ApiError(400, 'La ubicación y el tipo manual de entrada son obligatorios cuando la cantidad inicial es mayor que cero.');
     await Promise.all([ensureUniqueCode(data.codigo), ensureRelationsExist(data)]);
-    const producto = await Producto.create(data);
+    const { cantidad, ubicacionId, tipoMovimientoId, ...productData } = data;
+    const producto = await createProductWithInitialStock({ productData, initialQuantity: cantidad, ubicacionId, tipoMovimientoId, usuarioId: req.user.id });
     const result = await Producto.findByPk(producto.id, { include: includeRelations });
     return res.status(201).json(result);
   } catch (error) {
@@ -110,6 +116,12 @@ exports.update = async (req, res, next) => {
     const data = buildData(req.body, true);
     const producto = await Producto.findByPk(req.resourceId);
     if (!producto) throw new ApiError(404, 'Producto no encontrado.');
+    if (data.cantidad !== undefined) {
+      if (data.cantidad !== Number(producto.cantidad)) {
+        throw new ApiError(403, 'La cantidad solo puede cambiar mediante movimientos de inventario.');
+      }
+      delete data.cantidad;
+    }
     await Promise.all([ensureUniqueCode(data.codigo, producto.id), ensureRelationsExist(data)]);
     await producto.update(data);
     const result = await Producto.findByPk(producto.id, { include: includeRelations });

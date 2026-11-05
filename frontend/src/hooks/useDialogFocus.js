@@ -2,6 +2,11 @@ import { useEffect, useRef } from 'react'
 
 export default function useDialogFocus(open, onClose) {
   const dialogRef = useRef(null)
+  const onCloseRef = useRef(onClose)
+
+  useEffect(() => {
+    onCloseRef.current = onClose
+  }, [onClose])
 
   useEffect(() => {
     if (!open) return undefined
@@ -11,7 +16,9 @@ export default function useDialogFocus(open, onClose) {
     focusable()[0]?.focus()
 
     const handleKey = (event) => {
-      if (event.key === 'Escape') onClose()
+      const dialogs = [...document.querySelectorAll('[role="dialog"], [role="alertdialog"]')]
+      if (dialogs.at(-1) !== dialog) return
+      if (event.key === 'Escape') onCloseRef.current()
       if (event.key !== 'Tab') return
       const elements = focusable()
       if (!elements.length) return
@@ -23,7 +30,7 @@ export default function useDialogFocus(open, onClose) {
 
     document.addEventListener('keydown', handleKey)
     return () => { document.removeEventListener('keydown', handleKey); previous?.focus?.() }
-  }, [open, onClose])
+  }, [open])
 
   return dialogRef
 }

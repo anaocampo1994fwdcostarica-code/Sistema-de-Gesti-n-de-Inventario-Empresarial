@@ -34,8 +34,9 @@ module.exports = (sequelize, DataTypes) => {
     { tableName: 'proveedores' },
   );
 
-  Proveedor.associate = ({ Producto }) => {
+  Proveedor.associate = ({ Producto, Compra }) => {
     Proveedor.hasMany(Producto, { foreignKey: 'proveedorId', as: 'productos' });
+    Proveedor.hasMany(Compra, { foreignKey: 'proveedorId', as: 'compras' });
   };
 
   return Proveedor;

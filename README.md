@@ -1,54 +1,278 @@
 # Sistema de Gestión de Inventario Empresarial
 
-Aplicación web académica para administrar productos, categorías y proveedores desde una interfaz centralizada. El sistema permite registrar existencias, consultar información relacionada, actualizar datos y controlar eliminaciones que podrían afectar la integridad del inventario.
-
-## Problema que resuelve
-
-La gestión manual mediante cuadernos, hojas de cálculo aisladas o archivos sin una estructura común dificulta conocer las existencias reales, localizar proveedores y mantener una clasificación consistente de los productos. Esto puede provocar duplicados, información desactualizada y errores al relacionar productos con sus categorías o proveedores.
-
-El sistema centraliza estos datos en una base MySQL y aplica reglas de integridad para que cada producto tenga una categoría y un proveedor válidos.
+Aplicación empresarial full-stack para administrar catálogos, almacenamiento, existencias y operaciones de inventario con autenticación JWT, trazabilidad e integridad transaccional.
 
 ## Objetivo general
 
-Desarrollar una aplicación web full stack que facilite la administración de un inventario empresarial mediante operaciones CRUD, validaciones de negocio, relaciones entre entidades y una interfaz responsive conectada a una API REST.
+Centralizar el registro de productos y sus existencias por ubicación, controlar entradas, salidas y traslados, y procesar compras, ventas y ajustes sin permitir inventario negativo ni modificaciones directas que rompan el historial.
 
 ## Tecnologías
 
-### Frontend
-
-- React 19
-- Vite 8
-- React Router DOM
-- Axios
-- JavaScript, JSX y CSS
-
-### Backend
-
-- Node.js
-- Express 5
-- Sequelize 6 y Sequelize CLI
-- MySQL2
-- dotenv
-- CORS
-
-### Base de datos
-
-- MySQL
-- Base predeterminada: `inventario_empresarial`
+- Frontend: React 19, Vite, React Router y Axios.
+- Backend: Node.js, Express 5, Sequelize 6.
+- Base de datos: MySQL.
+- Seguridad: JWT con expiración, bcrypt y rutas privadas.
+- Herramientas: Sequelize CLI, Postman y diagrams.net.
 
 ## Arquitectura
 
-El proyecto se divide en tres capas:
-
-1. **Frontend:** aplicación React que presenta el Dashboard y los módulos CRUD. Consume la API mediante una instancia central de Axios.
-2. **Backend:** API REST Express organizada en rutas, controladores, middlewares y modelos Sequelize.
-3. **Base de datos:** MySQL almacena las tablas `categorias`, `proveedores`, `productos` y `SequelizeMeta`.
-
 ```text
-React (5173) ──HTTP/JSON──> Express (3004) ──Sequelize──> MySQL (3306)
+React/Vite :5173
+      │ Axios + Authorization: Bearer <JWT>
+      ▼
+Express API :3004
+      │ controladores → servicios transaccionales → modelos Sequelize
+      ▼
+MySQL: inventario_empresarial
 ```
 
-## Estructura del proyecto
+El frontend usa páginas protegidas y un cliente Axios compartido. Express separa rutas, middleware, controladores y servicios. Sequelize administra modelos, asociaciones, transacciones y bloqueos de filas.
+
+## Requisitos previos
+
+- Node.js compatible con las dependencias del proyecto.
+- npm.
+- MySQL 8 o compatible.
+- Base de datos `inventario_empresarial`.
+- Puertos 3004 y 5173 disponibles.
+
+## Instalación
+
+```bash
+cd backend
+npm install
+
+cd ../frontend
+npm install
+```
+
+## Variables de entorno
+
+Copiar los archivos de ejemplo y completar valores locales. No versionar archivos `.env` ni publicar secretos.
+
+Backend (`backend/.env`):
+
+```dotenv
+PORT=3004
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=inventario_empresarial
+DB_USER=<USUARIO_LOCAL>
+DB_PASSWORD=<CONTRASENA_LOCAL>
+JWT_SECRET=<SECRETO_ALEATORIO_LOCAL>
+JWT_EXPIRES_IN=1h
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+```
+
+Frontend (`frontend/.env`, opcional):
+
+```dotenv
+VITE_API_URL=http://localhost:3004
+```
+
+## MySQL y migraciones
+
+Crear únicamente la base vacía; Sequelize crea las estructuras:
+
+```sql
+CREATE DATABASE inventario_empresarial
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+```
+
+Aplicar migraciones:
+
+```bash
+cd backend
+npx sequelize-cli db:migrate
+npx sequelize-cli db:migrate:status
+```
+
+El proyecto contiene 17 migraciones aplicadas: 15 tablas empresariales, una ampliación de usuarios y una migración idempotente de tipos técnicos de movimiento.
+
+## Ejecución
+
+Backend:
+
+```bash
+cd backend
+npm start
+```
+
+API: http://localhost:3004. Salud: `GET /api/health`.
+
+Frontend:
+
+```bash
+cd frontend
+npm run dev
+```
+
+Aplicación: http://localhost:5173.
+
+## Autenticación JWT
+
+- `POST /api/auth/register`: registra una cuenta con contraseña hasheada mediante bcrypt.
+- `POST /api/auth/login`: devuelve JWT y usuario público.
+- `GET /api/auth/me`: valida la sesión.
+- Las rutas empresariales exigen `Authorization: Bearer <token>`.
+- El frontend guarda el token en `sessionStorage`, lo elimina al cerrar sesión o recibir 401 y nunca almacena contraseñas.
+- `JWT_SECRET` debe existir solo como variable de entorno; HTTPS es obligatorio fuera de un entorno académico local.
+
+## Entidades empresariales
+
+| # | Tabla | Responsabilidad |
+|---:|---|---|
+| 1 | usuarios | Identidad, acceso y trazabilidad |
+| 2 | categorias | Clasificación de productos |
+| 3 | proveedores | Origen comercial de productos y compras |
+| 4 | productos | Catálogo y total derivado de unidades |
+| 5 | bodegas | Almacenes físicos |
+| 6 | ubicaciones | Posiciones internas por bodega |
+| 7 | existencias | Cantidad por producto y ubicación |
+| 8 | tipos_movimiento | Efectos ENTRADA, SALIDA o TRASLADO |
+| 9 | movimientos_inventario | Historial inmutable |
+| 10 | clientes | Destinatarios de ventas |
+| 11 | compras | Encabezados de recepción |
+| 12 | detalles_compras | Productos, ubicación, cantidad y costo |
+| 13 | ventas | Encabezados de salida |
+| 14 | detalles_ventas | Productos, ubicación, cantidad y precio |
+| 15 | ajustes_inventario | Correcciones auditables de cantidad |
+
+## Relaciones principales
+
+- Categoria 1:N Producto.
+- Proveedor 1:N Producto y 1:N Compra.
+- Bodega 1:N Ubicacion.
+- Producto N:M Ubicacion mediante Existencia, con `UNIQUE(productoId, ubicacionId)`.
+- Producto, TipoMovimiento, Usuario y ubicaciones se relacionan con MovimientoInventario.
+- Cliente 1:N Venta.
+- Compra 1:N DetalleCompra; cada detalle referencia Producto y Ubicacion.
+- Venta 1:N DetalleVenta; cada detalle referencia Producto y Ubicacion.
+- AjusteInventario referencia Producto, Ubicacion, Usuario y un MovimientoInventario único.
+
+El diagrama completo está en [docs/diagrama-er.drawio](docs/diagrama-er.drawio).
+
+## API REST
+
+Todas las rutas siguientes, salvo autenticación y salud, requieren JWT.
+
+| Recurso | Ruta base | Operaciones reales |
+|---|---|---|
+| Usuarios | `/api/usuarios` | Consulta y actualización de cuenta propia; POST administrativo 403 |
+| Categorías | `/api/categorias` | Cinco endpoints CRUD |
+| Proveedores | `/api/proveedores` | Cinco endpoints CRUD con integridad referencial |
+| Productos | `/api/productos` | Cinco endpoints; cantidad solo mediante inventario |
+| Bodegas | `/api/bodegas` | Cinco endpoints; DELETE desactiva |
+| Ubicaciones | `/api/ubicaciones` | Cinco endpoints; DELETE desactiva si no hay dependencias |
+| Existencias | `/api/existencias` | GET lista/detalle; POST, PUT y DELETE devuelven 403 |
+| Tipos de movimiento | `/api/tipos-movimiento` | Cinco endpoints; DELETE desactiva |
+| Movimientos | `/api/movimientos-inventario` | GET y POST; PUT y DELETE devuelven 409 |
+| Clientes | `/api/clientes` | Cinco endpoints; DELETE desactiva |
+| Compras | `/api/compras` | CRUD de borradores y POST `/:id/confirmar` |
+| Detalles de compra | `/api/detalles-compras` | CRUD mientras la compra esté en BORRADOR |
+| Ventas | `/api/ventas` | CRUD de borradores y POST `/:id/confirmar` |
+| Detalles de venta | `/api/detalles-ventas` | CRUD mientras la venta esté en BORRADOR |
+| Ajustes | `/api/ajustes-inventario` | GET y POST; PUT y DELETE devuelven 409 |
+
+Existen 15 controladores de entidades. Esto no implica 15 CRUD arbitrarios completos: existencias, movimientos, ajustes, usuarios y documentos confirmados tienen restricciones deliberadas por seguridad, consistencia y trazabilidad.
+
+La colección completa está en [docs/postman/Inventario_Empresarial.postman_collection.json](docs/postman/Inventario_Empresarial.postman_collection.json).
+
+## Reglas de inventario
+
+- `existencias.cantidad` es la fuente de verdad por producto y ubicación.
+- `productos.cantidad` es un total derivado, actualizado en la misma transacción.
+- No se permiten cantidades negativas.
+- No se permite escritura directa de existencias.
+- Entrada requiere destino; salida requiere origen; traslado requiere origen y destino distintos.
+- Las ubicaciones y tipos utilizados deben estar activos.
+- Los movimientos aplicados son inmutables y conservan el usuario responsable.
+- La creación con inventario inicial crea el producto en cero y registra la entrada en una sola transacción.
+
+## Compras y ventas
+
+Los documentos nacen en `BORRADOR`. Mientras estén en ese estado se pueden editar encabezado y detalles. La confirmación:
+
+1. bloquea el documento;
+2. recalcula el total en backend;
+3. aplica movimientos mediante el servicio de inventario;
+4. actualiza existencias y total del producto;
+5. registra el usuario;
+6. cambia el estado a `CONFIRMADA`.
+
+Una compra confirmada genera entradas. Una venta confirmada genera salidas y falla con 409 si no hay inventario suficiente. Documentos confirmados y sus detalles son inmutables.
+
+## Ajustes
+
+Un ajuste establece una nueva cantidad para un producto en una ubicación. El backend calcula la diferencia, genera una entrada o salida técnica y enlaza el ajuste con su movimiento. Los ajustes aplicados no se editan ni eliminan.
+
+## Idempotencia
+
+Compras, ventas y ajustes usan `claveIdempotencia`:
+
+- repetir la misma operación con la misma clave devuelve el resultado ya aplicado;
+- no se duplican movimientos ni cantidades;
+- intentar confirmar un documento ya confirmado con otra clave devuelve conflicto.
+
+## Errores HTTP
+
+| Estado | Uso |
+|---:|---|
+| 200/201 | Operación correcta |
+| 400 | Cuerpo, tipo, relación o regla inválida |
+| 401 | JWT ausente, inválido o vencido |
+| 403 | Operación expresamente no permitida |
+| 404 | Recurso inexistente |
+| 409 | Duplicado, dependencia, inmutabilidad o inventario insuficiente |
+| 500 | Error interno controlado por middleware |
+
+Las respuestas de error son JSON y el frontend transforma los mensajes técnicos en retroalimentación comprensible.
+
+## Pruebas
+
+Frontend:
+
+```bash
+cd frontend
+npm run lint
+npm run build
+```
+
+El backend utiliza el Test Runner nativo de Node.js y `fetch`, sin dependencias de pruebas adicionales. La suite contiene 30 pruebas de integración para autenticación, productos, entradas, salidas, traslados, compras, ventas, ajustes, idempotencia, rollback, inmutabilidad y consistencia de cantidades.
+
+Las pruebas requieren una base MySQL exclusiva. Copiar `backend/.env.test.example` como `backend/.env.test` y completar únicamente valores locales:
+
+```dotenv
+TEST_DB_HOST=127.0.0.1
+TEST_DB_PORT=3306
+TEST_DB_NAME=inventario_empresarial_test
+TEST_DB_USER=<USUARIO_MYSQL_DE_PRUEBAS>
+TEST_DB_PASSWORD=<CONTRASENA_MYSQL_DE_PRUEBAS>
+```
+
+La suite se detiene antes de conectarse si `TEST_DB_NAME` falta, coincide con la base principal o no termina en `_test`. En cada ejecución elimina y reconstruye exclusivamente esa base de pruebas, aplica las 17 migraciones y levanta Express en un puerto efímero. Nunca sincroniza, trunca ni migra `inventario_empresarial`.
+
+Ejecución:
+
+```bash
+cd backend
+npm test
+```
+
+Como alternativa, `TEST_DB_NAME` puede suministrarse solo para el proceso. En PowerShell:
+
+```powershell
+$env:TEST_DB_NAME='inventario_empresarial_test'
+npm test
+Remove-Item Env:TEST_DB_NAME
+```
+
+La base de pruebas queda disponible al terminar para inspección. La siguiente ejecución la recrea. La suite no incluye pruebas visuales ni una prueba de estrés con varias conexiones simultáneas; la concurrencia se cubre estructuralmente mediante bloqueos y transacciones y requiere una campaña separada de carga.
+
+La colección Postman permite repetir pruebas manuales sin contener credenciales reales.
+
+## Estructura
 
 ```text
 inventario-empresarial/
@@ -59,251 +283,39 @@ inventario-empresarial/
 │   ├── migrations/
 │   ├── models/
 │   ├── routes/
-│   ├── .env.example
-│   ├── .sequelizerc
+│   ├── services/
+│   ├── test/
 │   ├── app.js
-│   ├── server.js
-│   └── package.json
+│   └── server.js
 ├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   └── styles/
-│   ├── .env.example
-│   ├── index.html
-│   ├── vite.config.js
-│   └── package.json
-├── docs/
-│   ├── evidencias/
-│   ├── diagrama-er.drawio
-│   └── justificacion.md
-├── .gitignore
-├── PROYECTO.md
-└── README.md
+│   └── src/
+│       ├── components/
+│       ├── contexts/
+│       ├── hooks/
+│       ├── pages/
+│       ├── services/
+│       └── styles/
+└── docs/
+    ├── diagrama-er.drawio
+    ├── investigacion_jwt_dia_2.md
+    ├── arquitectura_integridad.md
+    └── postman/
 ```
-
-## Requisitos de instalación
-
-En una computadora nueva se necesita:
-
-- Node.js 20.19 o posterior, o Node.js 22.12 o posterior (requisito de Vite 8).
-- npm, incluido con Node.js.
-- MySQL Server 8 o compatible.
-- Un usuario MySQL con permisos para crear una base de datos y tablas.
-- Git, opcional para clonar el repositorio.
-
-Compruebe las instalaciones:
-
-```bash
-node --version
-npm --version
-mysql --version
-```
-
-## Instalación
-
-Desde la raíz del proyecto, instale las dependencias de cada aplicación:
-
-```bash
-cd backend
-npm ci
-cd ../frontend
-npm ci
-```
-
-`npm ci` utiliza los archivos `package-lock.json` para obtener una instalación reproducible. Si se trabaja sin lockfiles, puede utilizarse `npm install`. No debe copiarse `node_modules` entre computadoras.
-
-## Configuración de variables de entorno
-
-Los archivos `.env` contienen configuración local y no se incluyen en Git. Cree cada archivo a partir de su ejemplo.
-
-En macOS o Linux:
-
-```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
-```
-
-En PowerShell:
-
-```powershell
-Copy-Item backend/.env.example backend/.env
-Copy-Item frontend/.env.example frontend/.env
-```
-
-### `backend/.env`
-
-```env
-PORT=3004
-NODE_ENV=development
-
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_NAME=inventario_empresarial
-DB_USER=usuario_mysql
-DB_PASSWORD=contraseña_local
-
-DB_LOGGING=false
-CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
-```
-
-Sustituya `DB_USER` y `DB_PASSWORD` por credenciales locales. No publique valores reales.
-
-### `frontend/.env`
-
-```env
-VITE_API_URL=http://localhost:3004
-```
-
-El frontend solo contiene la URL pública de la API. Nunca debe incluir credenciales MySQL.
-
-## Creación de la base y migraciones
-
-1. Inicie MySQL Server.
-2. Configure `backend/.env`.
-3. Ejecute desde `backend/`:
-
-```bash
-cd backend
-npm run sequelize -- db:create
-npm run sequelize -- db:migrate
-```
-
-Para consultar el estado sin modificar el esquema:
-
-```bash
-npm run sequelize -- db:migrate:status
-```
-
-Las migraciones se aplican en este orden:
-
-1. `create-categorias`
-2. `create-proveedores`
-3. `create-productos`
-
-No es necesario utilizar `sequelize.sync()`. El esquema se administra mediante migraciones.
-
-## Ejecución
-
-Abra dos terminales.
-
-### Terminal 1: backend
-
-```bash
-cd backend
-npm start
-```
-
-API: `http://localhost:3004`
-
-Comprobación de salud:
-
-```text
-GET http://localhost:3004/api/health
-```
-
-### Terminal 2: frontend
-
-```bash
-cd frontend
-npm run dev
-```
-
-Interfaz: `http://localhost:5173`
-
-## Páginas de React
-
-| Ruta | Página | Función |
-|---|---|---|
-| `/` | Dashboard | Muestra totales reales de productos, categorías, proveedores y unidades disponibles. |
-| `/productos` | Productos | Administra código, precio, cantidad, categoría y proveedor. |
-| `/categorias` | Categorías | Administra la clasificación de los productos. |
-| `/proveedores` | Proveedores | Administra nombres y datos de contacto. |
-
-## API REST
-
-Todas las respuestas se entregan en JSON.
-
-### Categorías
-
-| Método | Endpoint | Descripción |
-|---|---|---|
-| `GET` | `/api/categorias` | Lista todas las categorías. |
-| `GET` | `/api/categorias/:id` | Consulta una categoría por ID. |
-| `POST` | `/api/categorias` | Crea una categoría. |
-| `PUT` | `/api/categorias/:id` | Actualiza una categoría. |
-| `DELETE` | `/api/categorias/:id` | Elimina una categoría sin productos asociados. |
-
-### Proveedores
-
-| Método | Endpoint | Descripción |
-|---|---|---|
-| `GET` | `/api/proveedores` | Lista todos los proveedores. |
-| `GET` | `/api/proveedores/:id` | Consulta un proveedor por ID. |
-| `POST` | `/api/proveedores` | Crea un proveedor. |
-| `PUT` | `/api/proveedores/:id` | Actualiza un proveedor. |
-| `DELETE` | `/api/proveedores/:id` | Elimina un proveedor sin productos asociados. |
-
-### Productos
-
-| Método | Endpoint | Descripción |
-|---|---|---|
-| `GET` | `/api/productos` | Lista productos e incluye su categoría y proveedor. |
-| `GET` | `/api/productos/:id` | Consulta un producto con sus relaciones. |
-| `POST` | `/api/productos` | Crea un producto. |
-| `PUT` | `/api/productos/:id` | Actualiza un producto. |
-| `DELETE` | `/api/productos/:id` | Elimina un producto. |
-
-Endpoint adicional:
-
-| Método | Endpoint | Descripción |
-|---|---|---|
-| `GET` | `/api/health` | Confirma que la API está activa. |
-
-## Validaciones principales
-
-- Los IDs deben ser enteros positivos.
-- Se rechazan campos que no pertenecen al modelo.
-- Los campos obligatorios no pueden estar vacíos.
-- El nombre de categoría debe ser único.
-- El código de producto debe ser único.
-- El correo del proveedor debe tener un formato válido cuando se proporciona.
-- Precio y cantidad no pueden ser negativos.
-- La cantidad debe ser entera.
-- Categoría y proveedor deben existir antes de registrar un producto.
-- No se pueden eliminar categorías o proveedores con productos asociados.
-- Las claves foráneas utilizan `ON UPDATE CASCADE` y `ON DELETE RESTRICT`.
-
-Los códigos HTTP utilizados son `200`, `201`, `400`, `404`, `409` y `500`.
-
-## Pruebas realizadas
-
-- Conexión de Sequelize con MySQL.
-- Aplicación y verificación de las tres migraciones.
-- Prueba de los 15 endpoints CRUD mediante registros ficticios temporales.
-- Verificación de conflictos al eliminar categorías y proveedores relacionados.
-- Confirmación de persistencia de actualizaciones en MySQL.
-- Limpieza completa de los registros de prueba.
-- Comprobación de CORS entre Vite y Express.
-- Carga de los listados reales desde React.
-- Compilación de producción con `npm run build`.
-- Revisión estática con `npm run lint`.
 
 ## Limitaciones conocidas
 
-- No incluye autenticación, usuarios, roles ni permisos.
-- No administra ventas, compras, movimientos históricos o alertas automáticas.
-- Los listados no incluyen búsqueda, filtros ni paginación.
-- Las pruebas funcionales realizadas son manuales; no existe una suite automatizada.
-- El endpoint de salud confirma la disponibilidad de Express, pero no ejecuta una comprobación activa de MySQL.
-- Está planteado como un proyecto académico local, no como una aplicación preparada para producción pública.
+- No existen roles ni permisos; cualquier usuario autenticado accede a las operaciones empresariales.
+- El mantenimiento de usuarios se limita a la cuenta propia.
+- No se usan refresh tokens.
+- El token en `sessionStorage` sigue siendo vulnerable ante XSS; se requiere CSP, revisión de dependencias y HTTPS en producción.
+- No hay limitación de intentos de login.
+- La suite de backend no sustituye pruebas de carga o estrés concurrente.
+- Las pruebas visuales y responsive requieren ejecución manual o navegador automatizado.
+- La anulación contable de documentos confirmados no está implementada; el historial se conserva por inmutabilidad.
 
 ## Documentación adicional
 
-- [Estado técnico del proyecto](PROYECTO.md)
-- [Justificación académica](docs/justificacion.md)
-- [Diagrama entidad-relación](docs/diagrama-er.drawio)
-- [Guía de evidencias](docs/evidencias/README.md)
-- [Entregables completos del Día 1](docs/evidencias/Entregables_Dia_1_Inventario_Empresarial_COMPLETO.docx)
+- [Arquitectura e integridad](docs/arquitectura_integridad.md)
+- [Investigación JWT](docs/investigacion_jwt_dia_2.md)
+- [Diagrama ER editable](docs/diagrama-er.drawio)
+- [Colección Postman](docs/postman/Inventario_Empresarial.postman_collection.json)
