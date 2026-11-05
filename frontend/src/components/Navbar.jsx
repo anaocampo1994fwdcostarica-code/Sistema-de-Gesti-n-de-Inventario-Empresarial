@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import useAuth from '../hooks/useAuth'
 import { checkApiHealth } from '../services/api'
 import Icon from './Icon'
 
@@ -12,6 +13,8 @@ const links = [
 
 export default function Navbar() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { logout, usuario } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
   const [apiStatus, setApiStatus] = useState('checking')
 
@@ -64,6 +67,18 @@ export default function Navbar() {
     </button>
   )
 
+  const closeSession = () => {
+    logout()
+    navigate('/login', { replace: true })
+  }
+
+  const sessionControls = (
+    <div className="session-controls">
+      <span className="session-user" title={usuario?.correo}>{usuario?.nombre}</span>
+      <button className="logout-button" onClick={closeSession}>Cerrar sesión</button>
+    </div>
+  )
+
   return (
     <header className="site-header">
       <div className="site-header__inner">
@@ -73,6 +88,7 @@ export default function Navbar() {
         </NavLink>
         <nav className="topnav" aria-label="Navegación principal">{navLinks}</nav>
         <div className="desktop-connection">{connectionButton}</div>
+        <div className="desktop-session">{sessionControls}</div>
         <button className="icon-button menu-button" onClick={() => setMenuOpen((open) => !open)} aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={menuOpen} aria-controls="mobile-navigation">
           <Icon name={menuOpen ? 'close' : 'menu'} />
         </button>
@@ -80,6 +96,7 @@ export default function Navbar() {
       <div id="mobile-navigation" className={`mobile-navigation${menuOpen ? ' mobile-navigation--open' : ''}`} aria-hidden={!menuOpen}>
         <nav aria-label="Navegación móvil">{navLinks}</nav>
         <div className="mobile-connection">{connectionButton}</div>
+        <div className="mobile-session">{sessionControls}</div>
       </div>
     </header>
   )

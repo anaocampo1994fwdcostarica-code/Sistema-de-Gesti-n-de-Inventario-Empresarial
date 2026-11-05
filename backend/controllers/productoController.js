@@ -77,6 +77,9 @@ const ensureRelationsExist = async (data) => {
 exports.create = async (req, res, next) => {
   try {
     const data = buildData(req.body);
+    if (data.cantidad !== 0) {
+      throw new ApiError(403, 'Los productos nuevos deben iniciar con cantidad cero; utilice un movimiento de entrada.');
+    }
     await Promise.all([ensureUniqueCode(data.codigo), ensureRelationsExist(data)]);
     const producto = await Producto.create(data);
     const result = await Producto.findByPk(producto.id, { include: includeRelations });
@@ -110,6 +113,12 @@ exports.update = async (req, res, next) => {
     const data = buildData(req.body, true);
     const producto = await Producto.findByPk(req.resourceId);
     if (!producto) throw new ApiError(404, 'Producto no encontrado.');
+    if (data.cantidad !== undefined) {
+      if (data.cantidad !== Number(producto.cantidad)) {
+        throw new ApiError(403, 'La cantidad solo puede cambiar mediante movimientos de inventario.');
+      }
+      delete data.cantidad;
+    }
     await Promise.all([ensureUniqueCode(data.codigo, producto.id), ensureRelationsExist(data)]);
     await producto.update(data);
     const result = await Producto.findByPk(producto.id, { include: includeRelations });
