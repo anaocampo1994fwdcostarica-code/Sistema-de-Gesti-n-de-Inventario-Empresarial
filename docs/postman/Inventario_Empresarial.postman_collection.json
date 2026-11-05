@@ -1,0 +1,2087 @@
+{
+  "info": {
+    "_postman_id": "e407cc9a-25cb-4c1d-9f13-9c06b60ac101",
+    "name": "Inventario Empresarial",
+    "description": "Colección académica basada en las rutas Express reales. Las rutas privadas heredan Bearer {{token}}. Los ID 1 son ejemplos sustituibles. Las operaciones restringidas se documentan expresamente y no se presentan como CRUD funcional completo.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3004",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Registrar usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario de prueba\",\n  \"correo\": \"usuario@example.test\",\n  \"password\": \"CambiarPorClaveSegura1!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Registro público. No guarda el token automáticamente."
+          }
+        },
+        {
+          "name": "Iniciar sesión",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"usuario@example.test\",\n  \"password\": \"CambiarPorClaveSegura1!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicio de sesión público. Copie el JWT devuelto en la variable token."
+          }
+        },
+        {
+          "name": "Consultar perfil autenticado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Devuelve el perfil público de la cuenta autenticada; nunca passwordHash."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Listar Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            },
+            "description": "Restringido a la propia cuenta autenticada; no enumera cuentas ajenas."
+          }
+        },
+        {
+          "name": "Crear Usuarios",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Nombre actualizado\",\n  \"correo\": \"usuario@example.test\",\n  \"passwordActual\": \"ClaveActualSoloEjemplo\",\n  \"passwordNueva\": \"NuevaClaveSoloEjemplo1!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            },
+            "description": "Operación administrativa deshabilitada sin roles: responde 403. Use /api/auth/register para registro público."
+          }
+        },
+        {
+          "name": "Consultar Usuarios por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "1"
+              ]
+            },
+            "description": "Solo permite consultar el ID de la cuenta autenticada; una cuenta ajena responde 403."
+          }
+        },
+        {
+          "name": "Actualizar Usuarios por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Nombre actualizado\",\n  \"correo\": \"usuario@example.test\",\n  \"passwordActual\": \"ClaveActualSoloEjemplo\",\n  \"passwordNueva\": \"NuevaClaveSoloEjemplo1!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "1"
+              ]
+            },
+            "description": "Solo permite modificar la cuenta autenticada. Para cambiar contraseña exige passwordActual válida."
+          }
+        },
+        {
+          "name": "Eliminar Usuarios por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "1"
+              ]
+            },
+            "description": "Desactivación lógica de la propia cuenta; no elimina físicamente. Una cuenta ajena responde 403."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categorías",
+      "item": [
+        {
+          "name": "Listar Categorías",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categorias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "categorias"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Categorías",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Categoría de ejemplo\",\n  \"descripcion\": \"Descripción opcional\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/categorias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "categorias"
+              ]
+            },
+            "description": "Crea un recurso. Requiere JWT."
+          }
+        },
+        {
+          "name": "Consultar Categorías por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categorias/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "categorias",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Categorías por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Categoría de ejemplo\",\n  \"descripcion\": \"Descripción opcional\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/categorias/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "categorias",
+                "1"
+              ]
+            },
+            "description": "Actualiza el recurso con ID 1."
+          }
+        },
+        {
+          "name": "Eliminar Categorías por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categorias/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "categorias",
+                "1"
+              ]
+            },
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Proveedores",
+      "item": [
+        {
+          "name": "Listar Proveedores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/proveedores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "proveedores"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Proveedores",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Proveedor de ejemplo\",\n  \"telefono\": \"2222-2222\",\n  \"correo\": \"proveedor@example.test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/proveedores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "proveedores"
+              ]
+            },
+            "description": "Crea un recurso. Requiere JWT."
+          }
+        },
+        {
+          "name": "Consultar Proveedores por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/proveedores/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "proveedores",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Proveedores por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Proveedor de ejemplo\",\n  \"telefono\": \"2222-2222\",\n  \"correo\": \"proveedor@example.test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/proveedores/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "proveedores",
+                "1"
+              ]
+            },
+            "description": "Actualiza el recurso con ID 1."
+          }
+        },
+        {
+          "name": "Eliminar Proveedores por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/proveedores/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "proveedores",
+                "1"
+              ]
+            },
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Productos",
+      "item": [
+        {
+          "name": "Listar Productos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/productos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "productos"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Productos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Producto de ejemplo\",\n  \"codigo\": \"PROD-001\",\n  \"precio\": 1250.5,\n  \"cantidad\": 0,\n  \"categoriaId\": 1,\n  \"proveedorId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/productos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "productos"
+              ]
+            },
+            "description": "Crea el producto. Cantidad cero no genera movimiento; una cantidad inicial positiva requiere el contrato transaccional y ubicación válida del backend."
+          }
+        },
+        {
+          "name": "Consultar Productos por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/productos/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "productos",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Productos por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Producto de ejemplo\",\n  \"codigo\": \"PROD-001\",\n  \"precio\": 1250.5,\n  \"cantidad\": 0,\n  \"categoriaId\": 1,\n  \"proveedorId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/productos/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "productos",
+                "1"
+              ]
+            },
+            "description": "Actualiza datos maestros. Las cantidades no deben alterarse arbitrariamente fuera del servicio de inventario."
+          }
+        },
+        {
+          "name": "Eliminar Productos por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/productos/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "productos",
+                "1"
+              ]
+            },
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bodegas",
+      "item": [
+        {
+          "name": "Listar Bodegas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bodegas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bodegas"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Bodegas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Bodega de ejemplo\",\n  \"descripcion\": \"Bodega principal\",\n  \"direccion\": \"Dirección de ejemplo\",\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bodegas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bodegas"
+              ]
+            },
+            "description": "Crea un recurso. Requiere JWT."
+          }
+        },
+        {
+          "name": "Consultar Bodegas por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bodegas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bodegas",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Bodegas por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Bodega de ejemplo\",\n  \"descripcion\": \"Bodega principal\",\n  \"direccion\": \"Dirección de ejemplo\",\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bodegas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bodegas",
+                "1"
+              ]
+            },
+            "description": "Actualiza el recurso con ID 1."
+          }
+        },
+        {
+          "name": "Eliminar Bodegas por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bodegas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bodegas",
+                "1"
+              ]
+            },
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ubicaciones",
+      "item": [
+        {
+          "name": "Listar Ubicaciones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ubicaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ubicaciones"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Ubicaciones",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bodegaId\": 1,\n  \"codigo\": \"A-01\",\n  \"nombre\": \"Ubicación A-01\",\n  \"pasillo\": \"A\",\n  \"estante\": \"1\",\n  \"nivel\": \"1\",\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ubicaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ubicaciones"
+              ]
+            },
+            "description": "Crea un recurso. Requiere JWT."
+          }
+        },
+        {
+          "name": "Consultar Ubicaciones por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ubicaciones/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ubicaciones",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Ubicaciones por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bodegaId\": 1,\n  \"codigo\": \"A-01\",\n  \"nombre\": \"Ubicación A-01\",\n  \"pasillo\": \"A\",\n  \"estante\": \"1\",\n  \"nivel\": \"1\",\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ubicaciones/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ubicaciones",
+                "1"
+              ]
+            },
+            "description": "Actualiza el recurso con ID 1."
+          }
+        },
+        {
+          "name": "Eliminar Ubicaciones por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ubicaciones/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ubicaciones",
+                "1"
+              ]
+            },
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Existencias",
+      "item": [
+        {
+          "name": "Listar Existencias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/existencias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "existencias"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Existencias",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidad\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/existencias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "existencias"
+              ]
+            },
+            "description": "Escritura directa restringida por trazabilidad: responde 403. Las existencias se crean mediante operaciones transaccionales de inventario."
+          }
+        },
+        {
+          "name": "Consultar Existencias por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/existencias/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "existencias",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Existencias por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidad\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/existencias/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "existencias",
+                "1"
+              ]
+            },
+            "description": "Escritura directa restringida: responde 403. No modificar cantidades arbitrariamente."
+          }
+        },
+        {
+          "name": "Eliminar Existencias por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/existencias/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "existencias",
+                "1"
+              ]
+            },
+            "description": "Eliminación directa restringida: responde 403 para preservar integridad y trazabilidad."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tipos de movimiento",
+      "item": [
+        {
+          "name": "Listar Tipos de movimiento",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tipos-movimiento",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tipos-movimiento"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Tipos de movimiento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"ENTRADA_MANUAL\",\n  \"nombre\": \"Entrada manual\",\n  \"efecto\": \"ENTRADA\",\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tipos-movimiento",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tipos-movimiento"
+              ]
+            },
+            "description": "Crea un recurso. Requiere JWT."
+          }
+        },
+        {
+          "name": "Consultar Tipos de movimiento por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tipos-movimiento/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tipos-movimiento",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Tipos de movimiento por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"ENTRADA_MANUAL\",\n  \"nombre\": \"Entrada manual\",\n  \"efecto\": \"ENTRADA\",\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tipos-movimiento/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tipos-movimiento",
+                "1"
+              ]
+            },
+            "description": "Actualiza el recurso con ID 1."
+          }
+        },
+        {
+          "name": "Eliminar Tipos de movimiento por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tipos-movimiento/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tipos-movimiento",
+                "1"
+              ]
+            },
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Movimientos",
+      "item": [
+        {
+          "name": "Listar Movimientos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/movimientos-inventario",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "movimientos-inventario"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Movimientos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productoId\": 1,\n  \"tipoMovimientoId\": 1,\n  \"ubicacionOrigenId\": null,\n  \"ubicacionDestinoId\": 1,\n  \"cantidad\": 5,\n  \"motivo\": \"Entrada manual de ejemplo\",\n  \"referencia\": \"REF-EJEMPLO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/movimientos-inventario",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "movimientos-inventario"
+              ]
+            },
+            "description": "Registra ENTRADA, SALIDA o TRASLADO mediante inventarioService y una transacción. El usuario proviene del JWT."
+          }
+        },
+        {
+          "name": "Consultar Movimientos por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/movimientos-inventario/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "movimientos-inventario",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Movimientos por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productoId\": 1,\n  \"tipoMovimientoId\": 1,\n  \"ubicacionOrigenId\": null,\n  \"ubicacionDestinoId\": 1,\n  \"cantidad\": 5,\n  \"motivo\": \"Entrada manual de ejemplo\",\n  \"referencia\": \"REF-EJEMPLO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/movimientos-inventario/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "movimientos-inventario",
+                "1"
+              ]
+            },
+            "description": "Un movimiento aplicado es inmutable; responde 409."
+          }
+        },
+        {
+          "name": "Eliminar Movimientos por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/movimientos-inventario/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "movimientos-inventario",
+                "1"
+              ]
+            },
+            "description": "Un movimiento aplicado no se elimina por trazabilidad; responde 409."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Listar Clientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "clientes"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Clientes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Cliente de ejemplo\",\n  \"documento\": \"DOC-001\",\n  \"correo\": \"cliente@example.test\",\n  \"telefono\": \"8888-8888\",\n  \"direccion\": \"Dirección de ejemplo\",\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "clientes"
+              ]
+            },
+            "description": "Crea un recurso. Requiere JWT."
+          }
+        },
+        {
+          "name": "Consultar Clientes por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "clientes",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Clientes por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Cliente de ejemplo\",\n  \"documento\": \"DOC-001\",\n  \"correo\": \"cliente@example.test\",\n  \"telefono\": \"8888-8888\",\n  \"direccion\": \"Dirección de ejemplo\",\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "clientes",
+                "1"
+              ]
+            },
+            "description": "Actualiza el recurso con ID 1."
+          }
+        },
+        {
+          "name": "Eliminar Clientes por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "clientes",
+                "1"
+              ]
+            },
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Compras",
+      "item": [
+        {
+          "name": "Listar Compras",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/compras",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "compras"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Compras",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"proveedorId\": 1,\n  \"fecha\": \"2026-11-05T12:00:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/compras",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "compras"
+              ]
+            },
+            "description": "Crea un recurso. Requiere JWT."
+          }
+        },
+        {
+          "name": "Consultar Compras por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/compras/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "compras",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Compras por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"proveedorId\": 1,\n  \"fecha\": \"2026-11-05T12:00:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/compras/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "compras",
+                "1"
+              ]
+            },
+            "description": "Solo se editan documentos en BORRADOR; un documento confirmado responde 409."
+          }
+        },
+        {
+          "name": "Eliminar Compras por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/compras/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "compras",
+                "1"
+              ]
+            },
+            "description": "Solo se elimina un BORRADOR sin quebrantar integridad; confirmados son inmutables y responden 409."
+          }
+        },
+        {
+          "name": "Confirmar compra",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claveIdempotencia\": \"compra-{{$guid}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/compras/1/confirmar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "compras",
+                "1",
+                "confirmar"
+              ]
+            },
+            "description": "Confirma una compra BORRADOR de forma transaccional, incrementa inventario y registra movimientos. La clave evita reintentos duplicados."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Detalles de compra",
+      "item": [
+        {
+          "name": "Listar Detalles de compra",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/detalles-compras",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "detalles-compras"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Detalles de compra",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"compraId\": 1,\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidad\": 2,\n  \"costoUnitario\": 1000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/detalles-compras",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "detalles-compras"
+              ]
+            },
+            "description": "Agrega un detalle únicamente a una compra BORRADOR."
+          }
+        },
+        {
+          "name": "Consultar Detalles de compra por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/detalles-compras/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "detalles-compras",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Detalles de compra por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"compraId\": 1,\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidad\": 2,\n  \"costoUnitario\": 1000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/detalles-compras/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "detalles-compras",
+                "1"
+              ]
+            },
+            "description": "Solo puede editarse mientras la compra esté en BORRADOR; de lo contrario responde 409."
+          }
+        },
+        {
+          "name": "Eliminar Detalles de compra por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/detalles-compras/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "detalles-compras",
+                "1"
+              ]
+            },
+            "description": "Solo puede eliminarse mientras la compra esté en BORRADOR; de lo contrario responde 409."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ventas",
+      "item": [
+        {
+          "name": "Listar Ventas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ventas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ventas"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Ventas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteId\": 1,\n  \"fecha\": \"2026-11-05T12:00:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ventas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ventas"
+              ]
+            },
+            "description": "Crea un recurso. Requiere JWT."
+          }
+        },
+        {
+          "name": "Consultar Ventas por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ventas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ventas",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Ventas por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteId\": 1,\n  \"fecha\": \"2026-11-05T12:00:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ventas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ventas",
+                "1"
+              ]
+            },
+            "description": "Solo se editan documentos en BORRADOR; un documento confirmado responde 409."
+          }
+        },
+        {
+          "name": "Eliminar Ventas por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ventas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ventas",
+                "1"
+              ]
+            },
+            "description": "Solo se elimina un BORRADOR; las ventas confirmadas son inmutables y responden 409."
+          }
+        },
+        {
+          "name": "Confirmar venta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claveIdempotencia\": \"venta-{{$guid}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ventas/1/confirmar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ventas",
+                "1",
+                "confirmar"
+              ]
+            },
+            "description": "Confirma una venta BORRADOR de forma transaccional, valida saldo, descuenta inventario y registra movimientos. La clave evita reintentos duplicados."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Detalles de venta",
+      "item": [
+        {
+          "name": "Listar Detalles de venta",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/detalles-ventas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "detalles-ventas"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Detalles de venta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ventaId\": 1,\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidad\": 1,\n  \"precioUnitario\": 1500\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/detalles-ventas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "detalles-ventas"
+              ]
+            },
+            "description": "Agrega un detalle únicamente a una venta BORRADOR."
+          }
+        },
+        {
+          "name": "Consultar Detalles de venta por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/detalles-ventas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "detalles-ventas",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Detalles de venta por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ventaId\": 1,\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidad\": 1,\n  \"precioUnitario\": 1500\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/detalles-ventas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "detalles-ventas",
+                "1"
+              ]
+            },
+            "description": "Solo puede editarse mientras la venta esté en BORRADOR; de lo contrario responde 409."
+          }
+        },
+        {
+          "name": "Eliminar Detalles de venta por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/detalles-ventas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "detalles-ventas",
+                "1"
+              ]
+            },
+            "description": "Solo puede eliminarse mientras la venta esté en BORRADOR; de lo contrario responde 409."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ajustes de inventario",
+      "item": [
+        {
+          "name": "Listar Ajustes de inventario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ajustes-inventario",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ajustes-inventario"
+              ]
+            },
+            "description": "Lista los recursos. Requiere JWT."
+          }
+        },
+        {
+          "name": "Crear Ajustes de inventario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidadNueva\": 8,\n  \"motivo\": \"Conteo físico de ejemplo\",\n  \"claveIdempotencia\": \"ajuste-{{$guid}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ajustes-inventario",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ajustes-inventario"
+              ]
+            },
+            "description": "Aplica un ajuste transaccional, registra la diferencia y el movimiento asociado. claveIdempotencia es obligatoria."
+          }
+        },
+        {
+          "name": "Consultar Ajustes de inventario por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ajustes-inventario/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ajustes-inventario",
+                "1"
+              ]
+            },
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
+          }
+        },
+        {
+          "name": "Actualizar Ajustes de inventario por ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidadNueva\": 8,\n  \"motivo\": \"Conteo físico de ejemplo\",\n  \"claveIdempotencia\": \"ajuste-{{$guid}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ajustes-inventario/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ajustes-inventario",
+                "1"
+              ]
+            },
+            "description": "Los ajustes aplicados son inmutables; responde 409."
+          }
+        },
+        {
+          "name": "Eliminar Ajustes de inventario por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ajustes-inventario/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ajustes-inventario",
+                "1"
+              ]
+            },
+            "description": "Los ajustes aplicados no se eliminan por trazabilidad; responde 409."
+          }
+        }
+      ]
+    }
+  ]
+}
+

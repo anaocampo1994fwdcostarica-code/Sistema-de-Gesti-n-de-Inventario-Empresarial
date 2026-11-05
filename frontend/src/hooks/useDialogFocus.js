@@ -16,6 +16,8 @@ export default function useDialogFocus(open, onClose) {
     focusable()[0]?.focus()
 
     const handleKey = (event) => {
+      const dialogs = [...document.querySelectorAll('[role="dialog"], [role="alertdialog"]')]
+      if (dialogs.at(-1) !== dialog) return
       if (event.key === 'Escape') onCloseRef.current()
       if (event.key !== 'Tab') return
       const elements = focusable()

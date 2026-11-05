@@ -61,7 +61,12 @@ export default function AuthProvider({ children }) {
   }, [])
 
   const register = useCallback((data) => registerRequest(data), [])
-  const value = useMemo(() => ({ token, usuario, loading, authenticated: Boolean(token && usuario), login, register, logout }), [loading, login, logout, register, token, usuario])
+  const refreshUser = useCallback(async () => {
+    const currentUser = await getCurrentUser()
+    setUsuario(currentUser)
+    return currentUser
+  }, [])
+  const value = useMemo(() => ({ token, usuario, loading, authenticated: Boolean(token && usuario), login, register, logout, refreshUser }), [loading, login, logout, refreshUser, register, token, usuario])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

@@ -1,0 +1,4 @@
+import { useMemo } from 'react'
+import CatalogPage from '../components/CatalogPage'
+import { bodegasApi } from '../services/inventoryService'
+export default function Bodegas(){const config=useMemo(()=>({api:bodegasApi,section:'ALMACENES',title:'Bodegas',singular:'Bodega',emptyForm:{nombre:'',descripcion:'',direccion:'',activo:true},toForm:(x)=>({nombre:x.nombre,descripcion:x.descripcion||'',direccion:x.direccion||'',activo:x.activo}),toPayload:(x)=>({nombre:x.nombre.trim(),descripcion:x.descripcion.trim()||null,direccion:x.direccion.trim()||null,activo:x.activo}),columns:[{key:'nombre',label:'Nombre'},{key:'descripcion',label:'Descripción'},{key:'direccion',label:'Dirección'}],fields:[{name:'nombre',label:'Nombre',required:true,maxLength:100},{name:'descripcion',label:'Descripción',maxLength:255},{name:'direccion',label:'Dirección',maxLength:255},{name:'activo',label:'Activo',type:'checkbox'}]}),[]);return <CatalogPage config={config}/>} 
