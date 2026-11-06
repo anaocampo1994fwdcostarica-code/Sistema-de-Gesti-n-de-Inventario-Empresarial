@@ -2,9 +2,32 @@
 
 Aplicación empresarial full-stack para administrar catálogos, almacenamiento, existencias y operaciones de inventario con autenticación JWT, trazabilidad e integridad transaccional.
 
-## Objetivo general
+## Objetivo empresarial
 
 Centralizar el registro de productos y sus existencias por ubicación, controlar entradas, salidas y traslados, y procesar compras, ventas y ajustes sin permitir inventario negativo ni modificaciones directas que rompan el historial.
+
+## Características principales
+
+- Autenticación JWT, contraseñas protegidas con bcrypt y rutas privadas.
+- Quince modelos y controladores de entidad.
+- Existencias desglosadas por producto y ubicación.
+- Entradas, salidas y traslados con trazabilidad del usuario.
+- Compras y ventas transaccionales con documentos en borrador.
+- Ajustes positivos y negativos con movimiento asociado.
+- Idempotencia para impedir confirmaciones duplicadas.
+- Interfaz React adaptable con dashboard, formularios y modales.
+- Suite backend de 30 pruebas y colección Postman con 93 solicitudes.
+
+## Módulos
+
+| Área | Módulos |
+|---|---|
+| Acceso | Registro, login, perfil y cierre de sesión |
+| Catálogos | Productos, categorías, proveedores y clientes |
+| Almacenamiento | Bodegas, ubicaciones y existencias |
+| Inventario | Tipos de movimiento, movimientos y ajustes |
+| Comercial | Compras, detalles de compra, ventas y detalles de venta |
+| Seguimiento | Dashboard, trazabilidad y pruebas |
 
 ## Tecnologías
 
@@ -88,7 +111,7 @@ npx sequelize-cli db:migrate
 npx sequelize-cli db:migrate:status
 ```
 
-El proyecto contiene 17 migraciones aplicadas: 15 tablas empresariales, una ampliación de usuarios y una migración idempotente de tipos técnicos de movimiento.
+El repositorio contiene 17 migraciones JavaScript: 15 tablas empresariales, una ampliación de usuarios y una migración idempotente de tipos técnicos de movimiento. El estado aplicado de una instalación concreta se confirma con `npx sequelize-cli db:migrate:status`.
 
 ## Ejecución
 
@@ -177,7 +200,7 @@ Todas las rutas siguientes, salvo autenticación y salud, requieren JWT.
 
 Existen 15 controladores de entidades. Esto no implica 15 CRUD arbitrarios completos: existencias, movimientos, ajustes, usuarios y documentos confirmados tienen restricciones deliberadas por seguridad, consistencia y trazabilidad.
 
-La colección completa está en [docs/postman/Inventario_Empresarial.postman_collection.json](docs/postman/Inventario_Empresarial.postman_collection.json).
+La colección completa está en [docs/postman/Inventario_Empresarial.postman_collection.json](docs/postman/Inventario_Empresarial.postman_collection.json). Contiene 93 solicitudes: los 80 contratos de la API y 13 casos negativos explícitos (400, 401 y 404). Todas las solicitudes incluyen scripts Postman que validan el estado HTTP y la respuesta JSON.
 
 ## Reglas de inventario
 
@@ -270,7 +293,19 @@ Remove-Item Env:TEST_DB_NAME
 
 La base de pruebas queda disponible al terminar para inspección. La siguiente ejecución la recrea. La suite no incluye pruebas visuales ni una prueba de estrés con varias conexiones simultáneas; la concurrencia se cubre estructuralmente mediante bloqueos y transacciones y requiere una campaña separada de carga.
 
-La colección Postman permite repetir pruebas manuales sin contener credenciales reales.
+### Ejecución segura en Postman
+
+1. Prepare y migre una base exclusiva cuyo nombre termine en _test, siguiendo la configuración anterior.
+2. Inicie una instancia del backend conectada exclusivamente a esa base y configure baseUrl con su URL. No apunte la colección a la base principal.
+3. Importe docs/postman/Inventario_Empresarial.postman_collection.json.
+4. Complete en Postman las variables locales testEmail y testPassword; sus valores están vacíos en el archivo versionado.
+5. Ejecute **Registrar usuario** y **Iniciar sesión**. Los scripts guardan usuarioId y token como variables de colección.
+6. Configure los IDs de relaciones requeridos o ejecute primero las altas positivas en orden. Los scripts de creación guardan los identificadores devueltos.
+7. Ejecute la carpeta **Casos negativos (400, 401 y 404)**. Estas 13 solicitudes no realizan escrituras válidas.
+
+Los resultados verdes significan que coincidieron el código esperado, el formato JSON y las aserciones específicas. Un resultado rojo debe investigarse; los scripts no aceptan códigos alternativos. Para la evidencia académica, abra **Postman Runner**, ejecute la carpeta negativa contra la base aislada y capture el resumen donde sean visibles los nombres de los casos y las pruebas aprobadas, ocultando correo, contraseña, JWT y encabezados sensibles.
+
+La colección no contiene credenciales reales, tokens activos ni secretos. nonexistentId tiene un valor alto de ejemplo, pero debe comprobarse que no exista en la base aislada antes de ejecutar los casos 404.
 
 ## Estructura
 
@@ -315,7 +350,21 @@ inventario-empresarial/
 
 ## Documentación adicional
 
+- [Documento técnico del proyecto](PROYECTO.md)
 - [Arquitectura e integridad](docs/arquitectura_integridad.md)
 - [Investigación JWT](docs/investigacion_jwt_dia_2.md)
 - [Diagrama ER editable](docs/diagrama-er.drawio)
 - [Colección Postman](docs/postman/Inventario_Empresarial.postman_collection.json)
+- [Auditoría académica](docs/AUDITORIA_ACADEMICA.md)
+- [Evaluación histórica Día 1 y Día 2](docs/evaluacion_academica_dia1_dia2.md)
+
+## Estado académico
+
+- **Día 1:** la documentación disponible cubre tema empresarial, justificación, modelado inicial, estructura full stack y evidencia de creación/listado de categorías.
+- **Día 2:** autenticación, ampliación funcional, frontend protegido, pruebas y documentación están implementados. El CRUD literal de todas las entidades se cumple parcialmente debido a restricciones deliberadas de integridad. Faltan capturas reales, exportación PNG del ER y evidencia de ejecución de los nuevos casos Postman.
+
+El análisis detallado y las rutas de evidencia están en [docs/AUDITORIA_ACADEMICA.md](docs/AUDITORIA_ACADEMICA.md).
+
+## Repositorio
+
+[Sistema de Gestión de Inventario Empresarial](https://github.com/anaocampo1994fwdcostarica-code/Sistema-de-Gesti-n-de-Inventario-Empresarial)

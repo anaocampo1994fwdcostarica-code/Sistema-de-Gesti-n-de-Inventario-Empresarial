@@ -11,6 +11,7 @@ import '@fontsource/jetbrains-mono/600.css'
 import App from './App.jsx'
 import AuthProvider from './contexts/AuthContext.jsx'
 import './styles/global.css'
+import './styles/saas-theme.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

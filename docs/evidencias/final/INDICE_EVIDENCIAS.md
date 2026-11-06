@@ -40,9 +40,10 @@ No se creó ningún PNG vacío, ficticio o de relleno.
 |---|---|---|
 | `REPORTE_TECNICO.md` | 15 tablas, 15 controladores, 17 migraciones, 24 FK, JWT, Postman | DISPONIBLE |
 | `RESULTADOS_PRUEBAS.md` | Ejecución real de 30 pruebas sobre base aislada | DISPONIBLE |
+| `REPORTE_POSTMAN_RUNNER.md` | Ejecución aislada de 93 solicitudes: 253/253 aserciones aprobadas; base principal sin cambios | DISPONIBLE |
 | `GUIA_CAPTURAS.md` | Procedimiento para obtener las 19 capturas reales | DISPONIBLE |
 | `docs/diagrama-er.drawio` | Diagrama editable con 15 entidades y 24 relaciones | DISPONIBLE |
-| `docs/postman/Inventario_Empresarial.postman_collection.json` | 80 solicitudes, JSON v2.1 válido | DISPONIBLE |
+| `docs/postman/Inventario_Empresarial.postman_collection.json` | 93 solicitudes, 93 scripts, 6 casos 400, 4 casos 401 y 3 casos 404; JSON v2.1 válido | DISPONIBLE |
 | `README.md` | Instalación, arquitectura, seguridad, API y pruebas | DISPONIBLE |
 | Evidencia visual automatizada | No existe navegador automatizado instalado | NO APLICABLE |
 
@@ -61,7 +62,7 @@ No se creó ningún PNG vacío, ficticio o de relleno.
 | Compras y ventas | pruebas y colección Postman | capturas 11–14 pendientes |
 | Ajustes | pruebas y colección Postman | captura 15 pendiente |
 | Suite automatizada | resultados de pruebas | captura 18 pendiente |
-| API REST | colección Postman | captura 19 pendiente |
+| API REST y errores 400/401/404 | colección Postman con aserciones explícitas | captura 19 del Runner pendiente |
 
 ## Estado general
 

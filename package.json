@@ -1,0 +1,27 @@
+{
+  "name": "inventario-empresarial",
+  "version": "1.0.0",
+  "description": "Aplicación empresarial full-stack para administrar catálogos, almacenamiento, existencias y operaciones de inventario con autenticación JWT, trazabilidad e integridad transaccional.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "node --test backend/test/integration.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anaocampo1994fwdcostarica-code/Sistema-de-Gesti-n-de-Inventario-Empresarial.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/anaocampo1994fwdcostarica-code/Sistema-de-Gesti-n-de-Inventario-Empresarial/issues"
+  },
+  "homepage": "https://github.com/anaocampo1994fwdcostarica-code/Sistema-de-Gesti-n-de-Inventario-Empresarial#readme",
+  "devDependencies": {
+    "jest": "^30.5.2"
+  }
+}
