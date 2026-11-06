@@ -1,18 +1,18 @@
 :root {
   font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-  color: #003049;
-  background: #f2f5f7;
+  color: #202226;
+  background: #f5f6f8;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  --background: #f2f5f7;
+  --background: #f5f6f8;
   --surface: #ffffff;
   --surface-soft: #f8fafc;
   --border: #dfe5eb;
-  --text: #003049;
-  --muted: #526575;
-  --petroleum: #003049;
-  --orange: #f77f00;
-  --gold: #fcbf49;
+  --text: #202226;
+  --muted: #70747c;
+  --petroleum: #121316;
+  --orange: #d97706;
+  --gold: #f59e0b;
   --danger: #d62828;
   --success: #16a34a;
   --shadow-sm: 0 1px 3px rgba(15, 23, 42, .05), 0 1px 2px rgba(15, 23, 42, .04);
@@ -42,7 +42,7 @@ svg { display: block; }
 .brand small { margin-top: 2px; color: #b9cbd4; font-size: 8px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
 .topnav { display: flex; align-self: stretch; align-items: center; gap: 3px; margin-left: auto; }
 .topnav__link { position: relative; min-height: 40px; display: inline-flex; align-items: center; gap: 7px; padding: 9px 11px; color: #d9e5eb; border-radius: 8px; font-size: 11px; font-weight: 700; transition: color .17s ease, background .17s ease; }
-.topnav__link::after { content: ""; position: absolute; right: 11px; bottom: -18px; left: 11px; height: 2px; background: transparent; border-radius: 2px 2px 0 0; }
+.topnav__link::after { content: none; }
 .topnav__link:hover { color: #fff; background: rgba(255, 255, 255, .08); }
 .topnav__link--active { color: #fff; background: rgba(247, 127, 0, .18); }
 .topnav__link--active::after { background: var(--gold); }

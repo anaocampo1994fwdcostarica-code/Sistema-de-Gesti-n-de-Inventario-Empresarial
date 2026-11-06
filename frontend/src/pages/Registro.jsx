@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Alert } from '../components/Feedback'
+import logo from '../assets/inventario-logo.png'
 import useAuth from '../hooks/useAuth'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -35,7 +36,7 @@ export default function Registro() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <div className="auth-brand"><span className="brand__mark">IE</span><div><strong>Inventario Empresarial</strong><small>Nueva cuenta</small></div></div>
+        <div className="auth-brand"><img className="brand__mark brand-logo" src={logo} alt="Logo de Inventario Empresarial" /><div><strong>Inventario Empresarial</strong><small>Nueva cuenta</small></div></div>
         <div className="auth-card__header"><span className="eyebrow">REGISTRO</span><h1>Crear una cuenta</h1><p>Registra tus datos para acceder al sistema de inventario.</p></div>
         {error && <Alert>{error}</Alert>}
         <form className="form auth-form" onSubmit={submit}>

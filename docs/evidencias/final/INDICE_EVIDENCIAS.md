@@ -1,72 +1,67 @@
-# Índice de evidencias finales
+# Índice definitivo de evidencias
 
-Fecha de preparación: 5 de noviembre de 2026.
+Fecha de revisión: 5 de noviembre de 2026.
 
-Estados:
+## Criterio de prioridad
 
-- **DISPONIBLE**: archivo real y verificable presente.
-- **PENDIENTE**: requiere captura manual real.
-- **NO APLICABLE**: el requisito no necesita ese tipo de evidencia.
+La rúbrica proporcionada exige artefactos y funcionalidades, pero no enumera estos 19 PNG como archivos obligatorios individuales. Por tanto:
 
-## Evidencias visuales
+- **ESENCIAL PARA PRESENTACIÓN**: evidencia visual directa de un requisito central.
+- **RECOMENDADA**: fortalece la demostración de la interfaz o una operación evaluable.
+- **COMPLEMENTARIA**: demuestra alcance adicional, aunque el código y los reportes ya respaldan el requisito.
 
-| # | Evidencia | Requisito | Estado |
-|---:|---|---|---|
-| 1 | `01_login.png` | Autenticación | PENDIENTE |
-| 2 | `02_dashboard.png` | Navegación y sesión | PENDIENTE |
-| 3 | `03_productos.png` | Catálogo de productos | PENDIENTE |
-| 4 | `04_categorias.png` | Categorías | PENDIENTE |
-| 5 | `05_proveedores.png` | Proveedores | PENDIENTE |
-| 6 | `06_clientes.png` | Clientes | PENDIENTE |
-| 7 | `07_bodegas.png` | Bodegas | PENDIENTE |
-| 8 | `08_ubicaciones.png` | Ubicaciones | PENDIENTE |
-| 9 | `09_existencias.png` | Existencias | PENDIENTE |
-| 10 | `10_movimientos.png` | Movimientos y trazabilidad | PENDIENTE |
-| 11 | `11_compras.png` | Compras | PENDIENTE |
-| 12 | `12_detalle_compra.png` | Detalles y confirmación de compra | PENDIENTE |
-| 13 | `13_ventas.png` | Ventas | PENDIENTE |
-| 14 | `14_detalle_venta.png` | Detalles y confirmación de venta | PENDIENTE |
-| 15 | `15_ajustes.png` | Ajustes | PENDIENTE |
-| 16 | `16_mi_cuenta.png` | Cuenta propia | PENDIENTE |
-| 17 | `17_diagrama_er.png` | Modelo relacional | PENDIENTE |
-| 18 | `18_pruebas_backend.png` | Suite automatizada | PENDIENTE |
-| 19 | `19_coleccion_postman.png` | API REST | PENDIENTE |
+Los artefactos estrictamente necesarios ya existen en formato editable o documental: DOCX del Día 1, ER draw.io, colección Postman, código y reportes. Las capturas siguen siendo muy recomendables para una presentación clara.
 
-No se creó ningún PNG vacío, ficticio o de relleno.
+## Capturas planificadas
 
-## Evidencias técnicas disponibles
+| # | Archivo | Evidencia | Prioridad | Estado |
+|---:|---|---|---|---|
+| 1 | `01_login.png` | Login y acceso a registro | ESENCIAL PARA PRESENTACIÓN | PENDIENTE |
+| 2 | `02_dashboard.png` | Sesión, ruta protegida y navegación | ESENCIAL PARA PRESENTACIÓN | PENDIENTE |
+| 3 | `03_productos.png` | Catálogo y relaciones | RECOMENDADA | PENDIENTE |
+| 4 | `04_categorias.png` | CRUD de categorías | RECOMENDADA | PENDIENTE |
+| 5 | `05_proveedores.png` | CRUD de proveedores | RECOMENDADA | PENDIENTE |
+| 6 | `06_clientes.png` | Gestión de clientes | COMPLEMENTARIA | PENDIENTE |
+| 7 | `07_bodegas.png` | Gestión de bodegas | COMPLEMENTARIA | PENDIENTE |
+| 8 | `08_ubicaciones.png` | Relación bodega/ubicación | COMPLEMENTARIA | PENDIENTE |
+| 9 | `09_existencias.png` | Saldos por ubicación | RECOMENDADA | PENDIENTE |
+| 10 | `10_movimientos.png` | Trazabilidad | RECOMENDADA | PENDIENTE |
+| 11 | `11_compras.png` | Compras y estados | COMPLEMENTARIA | PENDIENTE |
+| 12 | `12_detalle_compra.png` | Gestión de detalles mediante modal | RECOMENDADA | PENDIENTE |
+| 13 | `13_ventas.png` | Ventas y estados | COMPLEMENTARIA | PENDIENTE |
+| 14 | `14_detalle_venta.png` | Gestión de detalles mediante modal | RECOMENDADA | PENDIENTE |
+| 15 | `15_ajustes.png` | Ajustes auditables | COMPLEMENTARIA | PENDIENTE |
+| 16 | `16_mi_cuenta.png` | Perfil de la cuenta propia | RECOMENDADA | PENDIENTE |
+| 17 | `17_diagrama_er.png` | ER actualizado legible | ESENCIAL PARA PRESENTACIÓN | PENDIENTE: exportación manual |
+| 18 | `18_pruebas_backend.png` | Resumen 30/30 | RECOMENDADA | PENDIENTE |
+| 19 | `19_coleccion_postman.png` | Runner: 93 solicitudes y 253/253 | ESENCIAL PARA PRESENTACIÓN | PENDIENTE |
 
-| Evidencia | Requisitos cubiertos | Estado |
+No hay PNG reales dentro de esta carpeta. No se creó ninguna imagen vacía, simulada ni de relleno.
+
+## Evidencias disponibles
+
+| Evidencia | Contenido | Estado |
 |---|---|---|
-| `REPORTE_TECNICO.md` | 15 tablas, 15 controladores, 17 migraciones, 24 FK, JWT, Postman | DISPONIBLE |
-| `RESULTADOS_PRUEBAS.md` | Ejecución real de 30 pruebas sobre base aislada | DISPONIBLE |
-| `GUIA_CAPTURAS.md` | Procedimiento para obtener las 19 capturas reales | DISPONIBLE |
-| `docs/diagrama-er.drawio` | Diagrama editable con 15 entidades y 24 relaciones | DISPONIBLE |
-| `docs/postman/Inventario_Empresarial.postman_collection.json` | 80 solicitudes, JSON v2.1 válido | DISPONIBLE |
-| `README.md` | Instalación, arquitectura, seguridad, API y pruebas | DISPONIBLE |
-| Evidencia visual automatizada | No existe navegador automatizado instalado | NO APLICABLE |
+| `../../../entrega_final/Informe_Academico_Integrado_Dia_1_Dia_2.docx` | Informe académico principal de los Días 1 y 2, con 12 imágenes embebidas | DISPONIBLE; requiere completar el nombre del estudiante y revisar un correo visible |
+| `../Entregables_Dia_1_Inventario_Empresarial_COMPLETO.docx` | Día 1 con cinco imágenes reales: ER inicial, estructura y POST/GET de categorías | DISPONIBLE |
+| `REPORTE_TECNICO.md` | 15 tablas, 15 controladores, 17 migraciones y 24 FK | DISPONIBLE |
+| `RESULTADOS_PRUEBAS.md` | Backend: 30/30 sobre base aislada | DISPONIBLE |
+| `REPORTE_POSTMAN_RUNNER.md` | 93 solicitudes, 253/253 aserciones y base principal sin cambios | DISPONIBLE |
+| `GUIA_CAPTURAS.md` | Procedimiento para producir capturas reales | DISPONIBLE |
+| `../../diagrama-er.drawio` | ER editable: 15 entidades y 24 relaciones | DISPONIBLE |
+| `../../postman/Inventario_Empresarial.postman_collection.json` | Collection v2.1: 93 solicitudes y 93 scripts | DISPONIBLE |
+| `../../../README.md` | Instalación, arquitectura, seguridad y pruebas | DISPONIBLE |
 
-## Cobertura por requisito académico
+## Evidencia histórica reutilizada
 
-| Requisito | Evidencia disponible | Evidencia visual |
-|---|---|---|
-| Arquitectura React/Express/MySQL | README y reporte técnico | Dashboard pendiente |
-| 15 tablas y relaciones | draw.io y reporte técnico | PNG del ER pendiente |
-| 15 controladores | reporte técnico | No aplicable |
-| 17 migraciones | reporte técnico | No aplicable |
-| 24 claves foráneas | draw.io y reporte técnico | PNG del ER pendiente |
-| JWT y rutas protegidas | código, README y pruebas | Login/dashboard pendientes |
-| CRUD y catálogos | código, Postman | capturas 03–08 pendientes |
-| Inventario y trazabilidad | servicios, pruebas y reporte | capturas 09–10 pendientes |
-| Compras y ventas | pruebas y colección Postman | capturas 11–14 pendientes |
-| Ajustes | pruebas y colección Postman | captura 15 pendiente |
-| Suite automatizada | resultados de pruebas | captura 18 pendiente |
-| API REST | colección Postman | captura 19 pendiente |
+Las imágenes del DOCX del Día 1 son legibles y válidas para ese entregable. No deben reutilizarse como capturas del sistema actual porque muestran el modelo inicial de tres entidades y pruebas históricas de categorías.
 
-## Estado general
+## Archivo Word integrado
 
-La evidencia técnica está disponible y validada. Las **19 capturas PNG están
-pendientes** porque no existe navegador automatizado ni exportador de
-diagrams.net disponible en el entorno. Deben obtenerse manualmente siguiendo
-`GUIA_CAPTURAS.md`.
+El Word definitivo de Día 1 y Día 2 está disponible en:
 
+`entrega_final/Informe_Academico_Integrado_Dia_1_Dia_2.docx`
+
+El archivo es un DOCX válido, conserva 12 imágenes embebidas y sus métricas coinciden con los reportes finales: Postman 93 solicitudes y 253/253 aserciones, backend 30/30, y frontend con lint y build correctos. También declara expresamente las restricciones de integridad de ciertas operaciones CRUD y el uso de modales.
+
+Pendiente antes de la entrega: completar manualmente el campo de estudiante `[Completar]` y decidir si se sustituye o edita, con autorización, la captura de “Mi cuenta” que contiene un correo personal. El documento histórico del Día 1 se conserva como evidencia independiente.

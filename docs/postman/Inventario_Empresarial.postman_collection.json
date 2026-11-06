@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "e407cc9a-25cb-4c1d-9f13-9c06b60ac101",
     "name": "Inventario Empresarial",
-    "description": "Colección académica basada en las rutas Express reales. Las rutas privadas heredan Bearer {{token}}. Los ID 1 son ejemplos sustituibles. Las operaciones restringidas se documentan expresamente y no se presentan como CRUD funcional completo.",
+    "description": "Colección académica basada en las rutas Express reales. Incluye scripts positivos y casos explícitos HTTP 400, 401 y 404. Ejecútese únicamente contra una base aislada; las variables sensibles comienzan vacías.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -23,6 +23,106 @@
     },
     {
       "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "testEmail",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "testPassword",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "nonexistentId",
+      "value": "2147483647",
+      "type": "string"
+    },
+    {
+      "key": "usuarioId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "categoriaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "proveedorId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "productoId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bodegaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ubicacionId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "existenciaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tipoMovimientoId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "movimientoId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "clienteId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "compraId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "detalleCompraId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ventaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "detalleVentaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ajusteId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ubicacionOrigenId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ubicacionDestinoId",
       "value": "",
       "type": "string"
     }
@@ -46,7 +146,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Usuario de prueba\",\n  \"correo\": \"usuario@example.test\",\n  \"password\": \"CambiarPorClaveSegura1!\"\n}",
+              "raw": "{\n  \"nombre\": \"Usuario Postman aislado\",\n  \"correo\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -65,7 +165,29 @@
               ]
             },
             "description": "Registro público. No guarda el token automáticamente."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) pm.collectionVariables.set(\"usuarioId\", response.id);",
+                  "pm.test(\"Incluye un identificador\", function () { pm.expect(response.id).to.be.a(\"number\"); });",
+                  "pm.test(\"No expone datos de contraseña\", function () {",
+                  "  pm.expect(response).not.to.have.property(\"password\");",
+                  "  pm.expect(response).not.to.have.property(\"passwordHash\");",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Iniciar sesión",
@@ -82,7 +204,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"correo\": \"usuario@example.test\",\n  \"password\": \"CambiarPorClaveSegura1!\"\n}",
+              "raw": "{\n  \"correo\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -101,7 +223,30 @@
               ]
             },
             "description": "Inicio de sesión público. Copie el JWT devuelto en la variable token."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Devuelve JWT y usuario público\", function () {",
+                  "  pm.expect(response.token).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(response.usuario).to.be.an(\"object\");",
+                  "  pm.expect(response.usuario).not.to.have.property(\"passwordHash\");",
+                  "});",
+                  "if (response.token) pm.collectionVariables.set(\"token\", response.token);",
+                  "if (response.usuario && response.usuario.id) pm.collectionVariables.set(\"usuarioId\", response.usuario.id);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar perfil autenticado",
@@ -120,7 +265,22 @@
               ]
             },
             "description": "Devuelve el perfil público de la cuenta autenticada; nunca passwordHash."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -143,7 +303,23 @@
               ]
             },
             "description": "Restringido a la propia cuenta autenticada; no enumera cuentas ajenas."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Usuarios",
@@ -175,7 +351,25 @@
               ]
             },
             "description": "Operación administrativa deshabilitada sin roles: responde 403. Use /api/auth/register para registro público."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Incluye mensaje de error\", function () {",
+                  "  pm.expect(pm.response.json()).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Usuarios por ID",
@@ -183,18 +377,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/usuarios/1",
+              "raw": "{{baseUrl}}/api/usuarios/{{usuarioId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "usuarios",
-                "1"
+                "{{usuarioId}}"
               ]
             },
-            "description": "Solo permite consultar el ID de la cuenta autenticada; una cuenta ajena responde 403."
-          }
+            "description": "Solo permite consultar el ID de la cuenta autenticada; una cuenta ajena responde 403. Configure {{usuarioId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Usuarios por ID",
@@ -216,18 +425,33 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/usuarios/1",
+              "raw": "{{baseUrl}}/api/usuarios/{{usuarioId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "usuarios",
-                "1"
+                "{{usuarioId}}"
               ]
             },
-            "description": "Solo permite modificar la cuenta autenticada. Para cambiar contraseña exige passwordActual válida."
-          }
+            "description": "Solo permite modificar la cuenta autenticada. Para cambiar contraseña exige passwordActual válida. Configure {{usuarioId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Usuarios por ID",
@@ -235,18 +459,33 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/usuarios/1",
+              "raw": "{{baseUrl}}/api/usuarios/{{usuarioId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "usuarios",
-                "1"
+                "{{usuarioId}}"
               ]
             },
-            "description": "Desactivación lógica de la propia cuenta; no elimina físicamente. Una cuenta ajena responde 403."
-          }
+            "description": "Desactivación lógica de la propia cuenta; no elimina físicamente. Una cuenta ajena responde 403. Configure {{usuarioId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -269,7 +508,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Categorías",
@@ -301,7 +556,25 @@
               ]
             },
             "description": "Crea un recurso. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) pm.collectionVariables.set(\"categoriaId\", response.id);",
+                  "pm.test(\"Incluye un identificador\", function () { pm.expect(response.id).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Categorías por ID",
@@ -309,18 +582,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/categorias/1",
+              "raw": "{{baseUrl}}/api/categorias/{{categoriaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "categorias",
-                "1"
+                "{{categoriaId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{categoriaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Categorías por ID",
@@ -342,18 +630,33 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/categorias/1",
+              "raw": "{{baseUrl}}/api/categorias/{{categoriaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "categorias",
-                "1"
+                "{{categoriaId}}"
               ]
             },
-            "description": "Actualiza el recurso con ID 1."
-          }
+            "description": "Actualiza el recurso con ID 1. Configure {{categoriaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Categorías por ID",
@@ -361,18 +664,33 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/categorias/1",
+              "raw": "{{baseUrl}}/api/categorias/{{categoriaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "categorias",
-                "1"
+                "{{categoriaId}}"
               ]
             },
-            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
-          }
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias. Configure {{categoriaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -395,7 +713,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Proveedores",
@@ -427,7 +761,25 @@
               ]
             },
             "description": "Crea un recurso. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) pm.collectionVariables.set(\"proveedorId\", response.id);",
+                  "pm.test(\"Incluye un identificador\", function () { pm.expect(response.id).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Proveedores por ID",
@@ -435,18 +787,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/proveedores/1",
+              "raw": "{{baseUrl}}/api/proveedores/{{proveedorId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "proveedores",
-                "1"
+                "{{proveedorId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{proveedorId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Proveedores por ID",
@@ -468,18 +835,33 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/proveedores/1",
+              "raw": "{{baseUrl}}/api/proveedores/{{proveedorId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "proveedores",
-                "1"
+                "{{proveedorId}}"
               ]
             },
-            "description": "Actualiza el recurso con ID 1."
-          }
+            "description": "Actualiza el recurso con ID 1. Configure {{proveedorId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Proveedores por ID",
@@ -487,18 +869,33 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/proveedores/1",
+              "raw": "{{baseUrl}}/api/proveedores/{{proveedorId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "proveedores",
-                "1"
+                "{{proveedorId}}"
               ]
             },
-            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
-          }
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias. Configure {{proveedorId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -521,7 +918,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Productos",
@@ -535,7 +948,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Producto de ejemplo\",\n  \"codigo\": \"PROD-001\",\n  \"precio\": 1250.5,\n  \"cantidad\": 0,\n  \"categoriaId\": 1,\n  \"proveedorId\": 1\n}",
+              "raw": "{\n  \"nombre\": \"Producto de ejemplo\",\n  \"codigo\": \"PROD-001\",\n  \"precio\": 1250.5,\n  \"cantidad\": 0,\n  \"categoriaId\": {{categoriaId}},\n  \"proveedorId\": {{proveedorId}}\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -553,7 +966,25 @@
               ]
             },
             "description": "Crea el producto. Cantidad cero no genera movimiento; una cantidad inicial positiva requiere el contrato transaccional y ubicación válida del backend."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) pm.collectionVariables.set(\"productoId\", response.id);",
+                  "pm.test(\"Incluye un identificador\", function () { pm.expect(response.id).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Productos por ID",
@@ -561,18 +992,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/productos/1",
+              "raw": "{{baseUrl}}/api/productos/{{productoId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "productos",
-                "1"
+                "{{productoId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{productoId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Productos por ID",
@@ -586,7 +1032,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Producto de ejemplo\",\n  \"codigo\": \"PROD-001\",\n  \"precio\": 1250.5,\n  \"cantidad\": 0,\n  \"categoriaId\": 1,\n  \"proveedorId\": 1\n}",
+              "raw": "{\n  \"nombre\": \"Producto de ejemplo\",\n  \"codigo\": \"PROD-001\",\n  \"precio\": 1250.5,\n  \"cantidad\": 0,\n  \"categoriaId\": {{categoriaId}},\n  \"proveedorId\": {{proveedorId}}\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -594,18 +1040,33 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/productos/1",
+              "raw": "{{baseUrl}}/api/productos/{{productoId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "productos",
-                "1"
+                "{{productoId}}"
               ]
             },
-            "description": "Actualiza datos maestros. Las cantidades no deben alterarse arbitrariamente fuera del servicio de inventario."
-          }
+            "description": "Actualiza datos maestros. Las cantidades no deben alterarse arbitrariamente fuera del servicio de inventario. Configure {{productoId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Productos por ID",
@@ -613,18 +1074,33 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/productos/1",
+              "raw": "{{baseUrl}}/api/productos/{{productoId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "productos",
-                "1"
+                "{{productoId}}"
               ]
             },
-            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
-          }
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias. Configure {{productoId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -647,7 +1123,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Bodegas",
@@ -679,7 +1171,25 @@
               ]
             },
             "description": "Crea un recurso. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) pm.collectionVariables.set(\"bodegaId\", response.id);",
+                  "pm.test(\"Incluye un identificador\", function () { pm.expect(response.id).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Bodegas por ID",
@@ -687,18 +1197,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/bodegas/1",
+              "raw": "{{baseUrl}}/api/bodegas/{{bodegaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "bodegas",
-                "1"
+                "{{bodegaId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{bodegaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Bodegas por ID",
@@ -720,18 +1245,33 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/bodegas/1",
+              "raw": "{{baseUrl}}/api/bodegas/{{bodegaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "bodegas",
-                "1"
+                "{{bodegaId}}"
               ]
             },
-            "description": "Actualiza el recurso con ID 1."
-          }
+            "description": "Actualiza el recurso con ID 1. Configure {{bodegaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Bodegas por ID",
@@ -739,18 +1279,33 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/bodegas/1",
+              "raw": "{{baseUrl}}/api/bodegas/{{bodegaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "bodegas",
-                "1"
+                "{{bodegaId}}"
               ]
             },
-            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
-          }
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias. Configure {{bodegaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -773,7 +1328,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Ubicaciones",
@@ -787,7 +1358,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"bodegaId\": 1,\n  \"codigo\": \"A-01\",\n  \"nombre\": \"Ubicación A-01\",\n  \"pasillo\": \"A\",\n  \"estante\": \"1\",\n  \"nivel\": \"1\",\n  \"activo\": true\n}",
+              "raw": "{\n  \"bodegaId\": {{bodegaId}},\n  \"codigo\": \"A-01\",\n  \"nombre\": \"Ubicación A-01\",\n  \"pasillo\": \"A\",\n  \"estante\": \"1\",\n  \"nivel\": \"1\",\n  \"activo\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -805,7 +1376,25 @@
               ]
             },
             "description": "Crea un recurso. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) pm.collectionVariables.set(\"ubicacionId\", response.id);",
+                  "pm.test(\"Incluye un identificador\", function () { pm.expect(response.id).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Ubicaciones por ID",
@@ -813,18 +1402,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/ubicaciones/1",
+              "raw": "{{baseUrl}}/api/ubicaciones/{{ubicacionId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "ubicaciones",
-                "1"
+                "{{ubicacionId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{ubicacionId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Ubicaciones por ID",
@@ -838,7 +1442,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"bodegaId\": 1,\n  \"codigo\": \"A-01\",\n  \"nombre\": \"Ubicación A-01\",\n  \"pasillo\": \"A\",\n  \"estante\": \"1\",\n  \"nivel\": \"1\",\n  \"activo\": true\n}",
+              "raw": "{\n  \"bodegaId\": {{bodegaId}},\n  \"codigo\": \"A-01\",\n  \"nombre\": \"Ubicación A-01\",\n  \"pasillo\": \"A\",\n  \"estante\": \"1\",\n  \"nivel\": \"1\",\n  \"activo\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -846,18 +1450,33 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/ubicaciones/1",
+              "raw": "{{baseUrl}}/api/ubicaciones/{{ubicacionId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "ubicaciones",
-                "1"
+                "{{ubicacionId}}"
               ]
             },
-            "description": "Actualiza el recurso con ID 1."
-          }
+            "description": "Actualiza el recurso con ID 1. Configure {{ubicacionId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Ubicaciones por ID",
@@ -865,18 +1484,33 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/ubicaciones/1",
+              "raw": "{{baseUrl}}/api/ubicaciones/{{ubicacionId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "ubicaciones",
-                "1"
+                "{{ubicacionId}}"
               ]
             },
-            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
-          }
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias. Configure {{ubicacionId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -899,7 +1533,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Existencias",
@@ -913,7 +1563,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidad\": 0\n}",
+              "raw": "{\n  \"productoId\": {{productoId}},\n  \"ubicacionId\": {{ubicacionId}},\n  \"cantidad\": 0\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -931,7 +1581,25 @@
               ]
             },
             "description": "Escritura directa restringida por trazabilidad: responde 403. Las existencias se crean mediante operaciones transaccionales de inventario."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Incluye mensaje de error\", function () {",
+                  "  pm.expect(pm.response.json()).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Existencias por ID",
@@ -939,18 +1607,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/existencias/1",
+              "raw": "{{baseUrl}}/api/existencias/{{existenciaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "existencias",
-                "1"
+                "{{existenciaId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{existenciaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Existencias por ID",
@@ -964,7 +1647,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidad\": 0\n}",
+              "raw": "{\n  \"productoId\": {{productoId}},\n  \"ubicacionId\": {{ubicacionId}},\n  \"cantidad\": 0\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -972,18 +1655,36 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/existencias/1",
+              "raw": "{{baseUrl}}/api/existencias/{{existenciaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "existencias",
-                "1"
+                "{{existenciaId}}"
               ]
             },
-            "description": "Escritura directa restringida: responde 403. No modificar cantidades arbitrariamente."
-          }
+            "description": "Escritura directa restringida: responde 403. No modificar cantidades arbitrariamente. Configure {{existenciaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Incluye mensaje de error\", function () {",
+                  "  pm.expect(pm.response.json()).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Existencias por ID",
@@ -991,18 +1692,36 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/existencias/1",
+              "raw": "{{baseUrl}}/api/existencias/{{existenciaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "existencias",
-                "1"
+                "{{existenciaId}}"
               ]
             },
-            "description": "Eliminación directa restringida: responde 403 para preservar integridad y trazabilidad."
-          }
+            "description": "Eliminación directa restringida: responde 403 para preservar integridad y trazabilidad. Configure {{existenciaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Incluye mensaje de error\", function () {",
+                  "  pm.expect(pm.response.json()).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -1025,7 +1744,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Tipos de movimiento",
@@ -1057,7 +1792,25 @@
               ]
             },
             "description": "Crea un recurso. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) pm.collectionVariables.set(\"tipoMovimientoId\", response.id);",
+                  "pm.test(\"Incluye un identificador\", function () { pm.expect(response.id).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Tipos de movimiento por ID",
@@ -1065,18 +1818,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/tipos-movimiento/1",
+              "raw": "{{baseUrl}}/api/tipos-movimiento/{{tipoMovimientoId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "tipos-movimiento",
-                "1"
+                "{{tipoMovimientoId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{tipoMovimientoId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Tipos de movimiento por ID",
@@ -1098,18 +1866,33 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/tipos-movimiento/1",
+              "raw": "{{baseUrl}}/api/tipos-movimiento/{{tipoMovimientoId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "tipos-movimiento",
-                "1"
+                "{{tipoMovimientoId}}"
               ]
             },
-            "description": "Actualiza el recurso con ID 1."
-          }
+            "description": "Actualiza el recurso con ID 1. Configure {{tipoMovimientoId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Tipos de movimiento por ID",
@@ -1117,18 +1900,33 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/tipos-movimiento/1",
+              "raw": "{{baseUrl}}/api/tipos-movimiento/{{tipoMovimientoId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "tipos-movimiento",
-                "1"
+                "{{tipoMovimientoId}}"
               ]
             },
-            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
-          }
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias. Configure {{tipoMovimientoId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -1151,7 +1949,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Movimientos",
@@ -1165,7 +1979,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productoId\": 1,\n  \"tipoMovimientoId\": 1,\n  \"ubicacionOrigenId\": null,\n  \"ubicacionDestinoId\": 1,\n  \"cantidad\": 5,\n  \"motivo\": \"Entrada manual de ejemplo\",\n  \"referencia\": \"REF-EJEMPLO\"\n}",
+              "raw": "{\n  \"productoId\": {{productoId}},\n  \"tipoMovimientoId\": {{tipoMovimientoId}},\n  \"ubicacionOrigenId\": null,\n  \"ubicacionDestinoId\": {{ubicacionDestinoId}},\n  \"cantidad\": 5,\n  \"motivo\": \"Entrada manual de ejemplo\",\n  \"referencia\": \"REF-EJEMPLO\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1183,7 +1997,25 @@
               ]
             },
             "description": "Registra ENTRADA, SALIDA o TRASLADO mediante inventarioService y una transacción. El usuario proviene del JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) pm.collectionVariables.set(\"movimientoId\", response.id);",
+                  "pm.test(\"Incluye un identificador\", function () { pm.expect(response.id).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Movimientos por ID",
@@ -1191,18 +2023,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/movimientos-inventario/1",
+              "raw": "{{baseUrl}}/api/movimientos-inventario/{{movimientoId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "movimientos-inventario",
-                "1"
+                "{{movimientoId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{movimientoId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Movimientos por ID",
@@ -1216,7 +2063,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productoId\": 1,\n  \"tipoMovimientoId\": 1,\n  \"ubicacionOrigenId\": null,\n  \"ubicacionDestinoId\": 1,\n  \"cantidad\": 5,\n  \"motivo\": \"Entrada manual de ejemplo\",\n  \"referencia\": \"REF-EJEMPLO\"\n}",
+              "raw": "{\n  \"productoId\": {{productoId}},\n  \"tipoMovimientoId\": {{tipoMovimientoId}},\n  \"ubicacionOrigenId\": null,\n  \"ubicacionDestinoId\": {{ubicacionDestinoId}},\n  \"cantidad\": 5,\n  \"motivo\": \"Entrada manual de ejemplo\",\n  \"referencia\": \"REF-EJEMPLO\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1224,18 +2071,36 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/movimientos-inventario/1",
+              "raw": "{{baseUrl}}/api/movimientos-inventario/{{movimientoId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "movimientos-inventario",
-                "1"
+                "{{movimientoId}}"
               ]
             },
-            "description": "Un movimiento aplicado es inmutable; responde 409."
-          }
+            "description": "Un movimiento aplicado es inmutable; responde 409. Configure {{movimientoId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Incluye mensaje de error\", function () {",
+                  "  pm.expect(pm.response.json()).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Movimientos por ID",
@@ -1243,18 +2108,36 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/movimientos-inventario/1",
+              "raw": "{{baseUrl}}/api/movimientos-inventario/{{movimientoId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "movimientos-inventario",
-                "1"
+                "{{movimientoId}}"
               ]
             },
-            "description": "Un movimiento aplicado no se elimina por trazabilidad; responde 409."
-          }
+            "description": "Un movimiento aplicado no se elimina por trazabilidad; responde 409. Configure {{movimientoId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Incluye mensaje de error\", function () {",
+                  "  pm.expect(pm.response.json()).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -1277,7 +2160,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Clientes",
@@ -1309,7 +2208,25 @@
               ]
             },
             "description": "Crea un recurso. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) pm.collectionVariables.set(\"clienteId\", response.id);",
+                  "pm.test(\"Incluye un identificador\", function () { pm.expect(response.id).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Clientes por ID",
@@ -1317,18 +2234,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/clientes/1",
+              "raw": "{{baseUrl}}/api/clientes/{{clienteId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "clientes",
-                "1"
+                "{{clienteId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{clienteId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Clientes por ID",
@@ -1350,18 +2282,33 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/clientes/1",
+              "raw": "{{baseUrl}}/api/clientes/{{clienteId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "clientes",
-                "1"
+                "{{clienteId}}"
               ]
             },
-            "description": "Actualiza el recurso con ID 1."
-          }
+            "description": "Actualiza el recurso con ID 1. Configure {{clienteId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Clientes por ID",
@@ -1369,18 +2316,33 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/clientes/1",
+              "raw": "{{baseUrl}}/api/clientes/{{clienteId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "clientes",
-                "1"
+                "{{clienteId}}"
               ]
             },
-            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias."
-          }
+            "description": "Elimina o desactiva según las reglas de integridad del controlador; puede responder 409 si existen dependencias. Configure {{clienteId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -1403,7 +2365,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Compras",
@@ -1417,7 +2395,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"proveedorId\": 1,\n  \"fecha\": \"2026-11-05T12:00:00.000Z\"\n}",
+              "raw": "{\n  \"proveedorId\": {{proveedorId}},\n  \"fecha\": \"2026-11-05T12:00:00.000Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1435,7 +2413,25 @@
               ]
             },
             "description": "Crea un recurso. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) pm.collectionVariables.set(\"compraId\", response.id);",
+                  "pm.test(\"Incluye un identificador\", function () { pm.expect(response.id).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Compras por ID",
@@ -1443,18 +2439,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/compras/1",
+              "raw": "{{baseUrl}}/api/compras/{{compraId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "compras",
-                "1"
+                "{{compraId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{compraId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Compras por ID",
@@ -1468,7 +2479,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"proveedorId\": 1,\n  \"fecha\": \"2026-11-05T12:00:00.000Z\"\n}",
+              "raw": "{\n  \"proveedorId\": {{proveedorId}},\n  \"fecha\": \"2026-11-05T12:00:00.000Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1476,18 +2487,33 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/compras/1",
+              "raw": "{{baseUrl}}/api/compras/{{compraId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "compras",
-                "1"
+                "{{compraId}}"
               ]
             },
-            "description": "Solo se editan documentos en BORRADOR; un documento confirmado responde 409."
-          }
+            "description": "Solo se editan documentos en BORRADOR; un documento confirmado responde 409. Configure {{compraId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Compras por ID",
@@ -1495,18 +2521,33 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/compras/1",
+              "raw": "{{baseUrl}}/api/compras/{{compraId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "compras",
-                "1"
+                "{{compraId}}"
               ]
             },
-            "description": "Solo se elimina un BORRADOR sin quebrantar integridad; confirmados son inmutables y responden 409."
-          }
+            "description": "Solo se elimina un BORRADOR sin quebrantar integridad; confirmados son inmutables y responden 409. Configure {{compraId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Confirmar compra",
@@ -1528,19 +2569,34 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/compras/1/confirmar",
+              "raw": "{{baseUrl}}/api/compras/{{compraId}}/confirmar",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "compras",
-                "1",
+                "{{compraId}}",
                 "confirmar"
               ]
             },
-            "description": "Confirma una compra BORRADOR de forma transaccional, incrementa inventario y registra movimientos. La clave evita reintentos duplicados."
-          }
+            "description": "Confirma una compra BORRADOR de forma transaccional, incrementa inventario y registra movimientos. La clave evita reintentos duplicados. Configure {{compraId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -1563,7 +2619,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Detalles de compra",
@@ -1577,7 +2649,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"compraId\": 1,\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidad\": 2,\n  \"costoUnitario\": 1000\n}",
+              "raw": "{\n  \"compraId\": {{compraId}},\n  \"productoId\": {{productoId}},\n  \"ubicacionId\": {{ubicacionId}},\n  \"cantidad\": 2,\n  \"costoUnitario\": 1000\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1595,7 +2667,25 @@
               ]
             },
             "description": "Agrega un detalle únicamente a una compra BORRADOR."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) pm.collectionVariables.set(\"detalleCompraId\", response.id);",
+                  "pm.test(\"Incluye un identificador\", function () { pm.expect(response.id).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Detalles de compra por ID",
@@ -1603,18 +2693,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/detalles-compras/1",
+              "raw": "{{baseUrl}}/api/detalles-compras/{{detalleCompraId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "detalles-compras",
-                "1"
+                "{{detalleCompraId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{detalleCompraId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Detalles de compra por ID",
@@ -1628,7 +2733,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"compraId\": 1,\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidad\": 2,\n  \"costoUnitario\": 1000\n}",
+              "raw": "{\n  \"compraId\": {{compraId}},\n  \"productoId\": {{productoId}},\n  \"ubicacionId\": {{ubicacionId}},\n  \"cantidad\": 2,\n  \"costoUnitario\": 1000\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1636,18 +2741,33 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/detalles-compras/1",
+              "raw": "{{baseUrl}}/api/detalles-compras/{{detalleCompraId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "detalles-compras",
-                "1"
+                "{{detalleCompraId}}"
               ]
             },
-            "description": "Solo puede editarse mientras la compra esté en BORRADOR; de lo contrario responde 409."
-          }
+            "description": "Solo puede editarse mientras la compra esté en BORRADOR; de lo contrario responde 409. Configure {{detalleCompraId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Detalles de compra por ID",
@@ -1655,18 +2775,33 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/detalles-compras/1",
+              "raw": "{{baseUrl}}/api/detalles-compras/{{detalleCompraId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "detalles-compras",
-                "1"
+                "{{detalleCompraId}}"
               ]
             },
-            "description": "Solo puede eliminarse mientras la compra esté en BORRADOR; de lo contrario responde 409."
-          }
+            "description": "Solo puede eliminarse mientras la compra esté en BORRADOR; de lo contrario responde 409. Configure {{detalleCompraId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -1689,7 +2824,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Ventas",
@@ -1703,7 +2854,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"clienteId\": 1,\n  \"fecha\": \"2026-11-05T12:00:00.000Z\"\n}",
+              "raw": "{\n  \"clienteId\": {{clienteId}},\n  \"fecha\": \"2026-11-05T12:00:00.000Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1721,7 +2872,25 @@
               ]
             },
             "description": "Crea un recurso. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) pm.collectionVariables.set(\"ventaId\", response.id);",
+                  "pm.test(\"Incluye un identificador\", function () { pm.expect(response.id).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Ventas por ID",
@@ -1729,18 +2898,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/ventas/1",
+              "raw": "{{baseUrl}}/api/ventas/{{ventaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "ventas",
-                "1"
+                "{{ventaId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{ventaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Ventas por ID",
@@ -1754,7 +2938,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"clienteId\": 1,\n  \"fecha\": \"2026-11-05T12:00:00.000Z\"\n}",
+              "raw": "{\n  \"clienteId\": {{clienteId}},\n  \"fecha\": \"2026-11-05T12:00:00.000Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1762,18 +2946,33 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/ventas/1",
+              "raw": "{{baseUrl}}/api/ventas/{{ventaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "ventas",
-                "1"
+                "{{ventaId}}"
               ]
             },
-            "description": "Solo se editan documentos en BORRADOR; un documento confirmado responde 409."
-          }
+            "description": "Solo se editan documentos en BORRADOR; un documento confirmado responde 409. Configure {{ventaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Ventas por ID",
@@ -1781,18 +2980,33 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/ventas/1",
+              "raw": "{{baseUrl}}/api/ventas/{{ventaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "ventas",
-                "1"
+                "{{ventaId}}"
               ]
             },
-            "description": "Solo se elimina un BORRADOR; las ventas confirmadas son inmutables y responden 409."
-          }
+            "description": "Solo se elimina un BORRADOR; las ventas confirmadas son inmutables y responden 409. Configure {{ventaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Confirmar venta",
@@ -1814,19 +3028,34 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/ventas/1/confirmar",
+              "raw": "{{baseUrl}}/api/ventas/{{ventaId}}/confirmar",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "ventas",
-                "1",
+                "{{ventaId}}",
                 "confirmar"
               ]
             },
-            "description": "Confirma una venta BORRADOR de forma transaccional, valida saldo, descuenta inventario y registra movimientos. La clave evita reintentos duplicados."
-          }
+            "description": "Confirma una venta BORRADOR de forma transaccional, valida saldo, descuenta inventario y registra movimientos. La clave evita reintentos duplicados. Configure {{ventaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -1849,7 +3078,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Detalles de venta",
@@ -1863,7 +3108,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"ventaId\": 1,\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidad\": 1,\n  \"precioUnitario\": 1500\n}",
+              "raw": "{\n  \"ventaId\": {{ventaId}},\n  \"productoId\": {{productoId}},\n  \"ubicacionId\": {{ubicacionId}},\n  \"cantidad\": 1,\n  \"precioUnitario\": 1500\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1881,7 +3126,25 @@
               ]
             },
             "description": "Agrega un detalle únicamente a una venta BORRADOR."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) pm.collectionVariables.set(\"detalleVentaId\", response.id);",
+                  "pm.test(\"Incluye un identificador\", function () { pm.expect(response.id).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Detalles de venta por ID",
@@ -1889,18 +3152,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/detalles-ventas/1",
+              "raw": "{{baseUrl}}/api/detalles-ventas/{{detalleVentaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "detalles-ventas",
-                "1"
+                "{{detalleVentaId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{detalleVentaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Detalles de venta por ID",
@@ -1914,7 +3192,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"ventaId\": 1,\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidad\": 1,\n  \"precioUnitario\": 1500\n}",
+              "raw": "{\n  \"ventaId\": {{ventaId}},\n  \"productoId\": {{productoId}},\n  \"ubicacionId\": {{ubicacionId}},\n  \"cantidad\": 1,\n  \"precioUnitario\": 1500\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1922,18 +3200,33 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/detalles-ventas/1",
+              "raw": "{{baseUrl}}/api/detalles-ventas/{{detalleVentaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "detalles-ventas",
-                "1"
+                "{{detalleVentaId}}"
               ]
             },
-            "description": "Solo puede editarse mientras la venta esté en BORRADOR; de lo contrario responde 409."
-          }
+            "description": "Solo puede editarse mientras la venta esté en BORRADOR; de lo contrario responde 409. Configure {{detalleVentaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Detalles de venta por ID",
@@ -1941,18 +3234,33 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/detalles-ventas/1",
+              "raw": "{{baseUrl}}/api/detalles-ventas/{{detalleVentaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "detalles-ventas",
-                "1"
+                "{{detalleVentaId}}"
               ]
             },
-            "description": "Solo puede eliminarse mientras la venta esté en BORRADOR; de lo contrario responde 409."
-          }
+            "description": "Solo puede eliminarse mientras la venta esté en BORRADOR; de lo contrario responde 409. Configure {{detalleVentaId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -1975,7 +3283,23 @@
               ]
             },
             "description": "Lista los recursos. Requiere JWT."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Devuelve una colección\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Crear Ajustes de inventario",
@@ -1989,7 +3313,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidadNueva\": 8,\n  \"motivo\": \"Conteo físico de ejemplo\",\n  \"claveIdempotencia\": \"ajuste-{{$guid}}\"\n}",
+              "raw": "{\n  \"productoId\": {{productoId}},\n  \"ubicacionId\": {{ubicacionId}},\n  \"cantidadNueva\": 8,\n  \"motivo\": \"Conteo físico de ejemplo\",\n  \"claveIdempotencia\": \"ajuste-{{$guid}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2007,7 +3331,25 @@
               ]
             },
             "description": "Aplica un ajuste transaccional, registra la diferencia y el movimiento asociado. claveIdempotencia es obligatoria."
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "const response = pm.response.json();",
+              "if (response && response.ajuste && response.ajuste.id) pm.collectionVariables.set(\"ajusteId\", response.ajuste.id);",
+              "pm.test(\"Incluye un identificador\", function () { pm.expect(response.ajuste && response.ajuste.id).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Consultar Ajustes de inventario por ID",
@@ -2015,18 +3357,33 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/ajustes-inventario/1",
+              "raw": "{{baseUrl}}/api/ajustes-inventario/{{ajusteId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "ajustes-inventario",
-                "1"
+                "{{ajusteId}}"
               ]
             },
-            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda."
-          }
+            "description": "Consulta el recurso con ID 1. Sustituya el ID según corresponda. Configure {{ajusteId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar Ajustes de inventario por ID",
@@ -2040,7 +3397,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productoId\": 1,\n  \"ubicacionId\": 1,\n  \"cantidadNueva\": 8,\n  \"motivo\": \"Conteo físico de ejemplo\",\n  \"claveIdempotencia\": \"ajuste-{{$guid}}\"\n}",
+              "raw": "{\n  \"productoId\": {{productoId}},\n  \"ubicacionId\": {{ubicacionId}},\n  \"cantidadNueva\": 8,\n  \"motivo\": \"Conteo físico de ejemplo\",\n  \"claveIdempotencia\": \"ajuste-{{$guid}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2048,18 +3405,36 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/ajustes-inventario/1",
+              "raw": "{{baseUrl}}/api/ajustes-inventario/{{ajusteId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "ajustes-inventario",
-                "1"
+                "{{ajusteId}}"
               ]
             },
-            "description": "Los ajustes aplicados son inmutables; responde 409."
-          }
+            "description": "Los ajustes aplicados son inmutables; responde 409. Configure {{ajusteId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Incluye mensaje de error\", function () {",
+                  "  pm.expect(pm.response.json()).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Eliminar Ajustes de inventario por ID",
@@ -2067,21 +3442,665 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/ajustes-inventario/1",
+              "raw": "{{baseUrl}}/api/ajustes-inventario/{{ajusteId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "ajustes-inventario",
-                "1"
+                "{{ajusteId}}"
               ]
             },
-            "description": "Los ajustes aplicados no se eliminan por trazabilidad; responde 409."
-          }
+            "description": "Los ajustes aplicados no se eliminan por trazabilidad; responde 409. Configure {{ajusteId}} con un ID existente en la base aislada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"La respuesta es JSON\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test(\"Incluye mensaje de error\", function () {",
+                  "  pm.expect(pm.response.json()).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Casos negativos (400, 401 y 404)",
+      "description": "Casos académicos explícitos sin escrituras válidas. Ejecútelos únicamente contra una base aislada.",
+      "item": [
+        {
+          "name": "HTTP 400 - Validación",
+          "item": [
+            {
+              "name": "400 - Registro sin campos obligatorios",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Incompleto\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "authController exige nombre, correo y password."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 400\", function () { pm.response.to.have.status(400); });",
+                      "pm.test(\"La respuesta es JSON\", function () {",
+                      "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                      "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                      "});",
+                      "const response = pm.response.json();",
+                      "pm.test(\"Incluye mensaje de error\", function () {",
+                      "  pm.expect(response).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                      "});",
+                      "pm.test(\"Reporta campos faltantes\", function () { pm.expect(response.error).to.eql(\"Faltan campos obligatorios.\"); pm.expect(response.details).to.be.an(\"array\"); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "400 - Login con correo inválido",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"correo\": \"correo-invalido\",\n  \"password\": \"valor-no-real\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "authController valida el formato del correo."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 400\", function () { pm.response.to.have.status(400); });",
+                      "pm.test(\"La respuesta es JSON\", function () {",
+                      "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                      "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                      "});",
+                      "const response = pm.response.json();",
+                      "pm.test(\"Incluye mensaje de error\", function () {",
+                      "  pm.expect(response).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "400 - Categoría sin nombre",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"descripcion\": \"Falta nombre\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/categorias",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias"
+                  ]
+                },
+                "description": "categoriaController requiere nombre."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 400\", function () { pm.response.to.have.status(400); });",
+                      "pm.test(\"La respuesta es JSON\", function () {",
+                      "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                      "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                      "});",
+                      "const response = pm.response.json();",
+                      "pm.test(\"Incluye mensaje de error\", function () {",
+                      "  pm.expect(response).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "400 - Cliente con correo inválido",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Caso inválido\",\n  \"correo\": \"correo-invalido\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/clientes",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "clientes"
+                  ]
+                },
+                "description": "clienteController valida el correo."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 400\", function () { pm.response.to.have.status(400); });",
+                      "pm.test(\"La respuesta es JSON\", function () {",
+                      "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                      "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                      "});",
+                      "const response = pm.response.json();",
+                      "pm.test(\"Incluye mensaje de error\", function () {",
+                      "  pm.expect(response).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "400 - Producto con cantidad negativa",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Producto inválido\",\n  \"codigo\": \"INVALIDO-NEG\",\n  \"precio\": 10,\n  \"cantidad\": -1,\n  \"categoriaId\": 1,\n  \"proveedorId\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/productos",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos"
+                  ]
+                },
+                "description": "productoController valida cantidad antes de consultar relaciones."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 400\", function () { pm.response.to.have.status(400); });",
+                      "pm.test(\"La respuesta es JSON\", function () {",
+                      "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                      "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                      "});",
+                      "const response = pm.response.json();",
+                      "pm.test(\"Incluye mensaje de error\", function () {",
+                      "  pm.expect(response).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "400 - ID con formato incorrecto",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/bodegas/no-es-id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "bodegas",
+                    "no-es-id"
+                  ]
+                },
+                "description": "validateId exige entero positivo."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 400\", function () { pm.response.to.have.status(400); });",
+                      "pm.test(\"La respuesta es JSON\", function () {",
+                      "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                      "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                      "});",
+                      "const response = pm.response.json();",
+                      "pm.test(\"Incluye mensaje de error\", function () {",
+                      "  pm.expect(response).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "HTTP 401 - Autenticación",
+          "item": [
+            {
+              "name": "401 - Perfil sin JWT",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/me",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "me"
+                  ]
+                },
+                "description": "Ruta protegida sin Bearer."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 401\", function () { pm.response.to.have.status(401); });",
+                      "pm.test(\"La respuesta es JSON\", function () {",
+                      "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                      "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                      "});",
+                      "const response = pm.response.json();",
+                      "pm.test(\"Incluye mensaje de error\", function () {",
+                      "  pm.expect(response).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                      "});",
+                      "pm.test(\"Mensaje de autenticación\", function () { pm.expect(response.error).to.eql(\"No autorizado\"); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "401 - Productos sin JWT",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/productos",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos"
+                  ]
+                },
+                "description": "Ruta privada sin Bearer."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 401\", function () { pm.response.to.have.status(401); });",
+                      "pm.test(\"La respuesta es JSON\", function () {",
+                      "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                      "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                      "});",
+                      "const response = pm.response.json();",
+                      "pm.test(\"Incluye mensaje de error\", function () {",
+                      "  pm.expect(response).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                      "});",
+                      "pm.test(\"Mensaje de autenticación\", function () { pm.expect(response.error).to.eql(\"No autorizado\"); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "401 - Token inválido",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "token-invalido-de-prueba",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/categorias",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias"
+                  ]
+                },
+                "description": "Bearer inválido."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 401\", function () { pm.response.to.have.status(401); });",
+                      "pm.test(\"La respuesta es JSON\", function () {",
+                      "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                      "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                      "});",
+                      "const response = pm.response.json();",
+                      "pm.test(\"Incluye mensaje de error\", function () {",
+                      "  pm.expect(response).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                      "});",
+                      "pm.test(\"Mensaje de autenticación\", function () { pm.expect(response.error).to.eql(\"No autorizado\"); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "401 - Credenciales incorrectas",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "noauth"
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"correo\": \"inexistente@example.test\",\n  \"password\": \"valor-no-real\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Usuario inexistente o contraseña incorrecta."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 401\", function () { pm.response.to.have.status(401); });",
+                      "pm.test(\"La respuesta es JSON\", function () {",
+                      "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                      "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                      "});",
+                      "const response = pm.response.json();",
+                      "pm.test(\"Incluye mensaje de error\", function () {",
+                      "  pm.expect(response).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                      "});",
+                      "pm.test(\"Mensaje de credenciales\", function () { pm.expect(response.error).to.eql(\"Credenciales incorrectas.\"); });"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "HTTP 404 - Recursos y rutas",
+          "item": [
+            {
+              "name": "404 - Categoría inexistente",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/categorias/{{nonexistentId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias",
+                    "{{nonexistentId}}"
+                  ]
+                },
+                "description": "Verifique que nonexistentId no exista en la base aislada."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 404\", function () { pm.response.to.have.status(404); });",
+                      "pm.test(\"La respuesta es JSON\", function () {",
+                      "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                      "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                      "});",
+                      "const response = pm.response.json();",
+                      "pm.test(\"Incluye mensaje de error\", function () {",
+                      "  pm.expect(response).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "404 - Producto inexistente",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/productos/{{nonexistentId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos",
+                    "{{nonexistentId}}"
+                  ]
+                },
+                "description": "Verifique que nonexistentId no exista en la base aislada."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 404\", function () { pm.response.to.have.status(404); });",
+                      "pm.test(\"La respuesta es JSON\", function () {",
+                      "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                      "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                      "});",
+                      "const response = pm.response.json();",
+                      "pm.test(\"Incluye mensaje de error\", function () {",
+                      "  pm.expect(response).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "404 - Ruta API inexistente",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/ruta-inexistente-postman",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "ruta-inexistente-postman"
+                  ]
+                },
+                "description": "Manejador final de Express."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 404\", function () { pm.response.to.have.status(404); });",
+                      "pm.test(\"La respuesta es JSON\", function () {",
+                      "  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                      "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                      "});",
+                      "const response = pm.response.json();",
+                      "pm.test(\"Incluye mensaje de error\", function () {",
+                      "  pm.expect(response).to.have.property(\"error\").that.is.a(\"string\").and.not.empty;",
+                      "});",
+                      "pm.test(\"Mensaje de ruta inexistente\", function () { pm.expect(response.error).to.eql(\"Ruta no encontrada.\"); });"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
         }
       ]
     }
   ]
 }
-

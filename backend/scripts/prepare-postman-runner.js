@@ -101,6 +101,9 @@ requests.get('Listar Existencias').event[0].script.exec.push(
   'pm.test("Existe la existencia generada por el movimiento", function () { pm.expect(encontrada).to.be.an("object"); });',
   'if (encontrada) pm.collectionVariables.set("existenciaId", encontrada.id);',
 );
+const ajusteCreateScript = requests.get('Crear Ajustes de inventario').event[0].script.exec;
+ajusteCreateScript[6] = 'if (response && response.ajuste && response.ajuste.id) pm.collectionVariables.set("ajusteId", response.ajuste.id);';
+ajusteCreateScript[7] = 'pm.test("Incluye un identificador", function () { pm.expect(response.ajuste && response.ajuste.id).to.be.a("number"); });';
 
 collection.info.name += ' - Runner temporal aislado';
 collection.info.description = 'Copia temporal con 93 solicitudes para inventario_empresarial_test en puerto 3104.';
