@@ -201,8 +201,8 @@ El resultado documental disponible registra 30 aprobadas y 0 fallidas en [docs/e
 - Sin roles, refresh tokens, rate limiting ni paginación general.
 - `sessionStorage` sigue expuesto ante XSS.
 - Sin prueba de carga ni anulación contable posterior.
-- Faltan capturas reales, PNG del ER y Postman Runner.
-- Postman no contiene respuestas guardadas ni ejecución completa evidenciada.
+- Faltan las capturas visuales finales y una exportación PNG/PDF del ER.
+- Postman no contiene respuestas guardadas, pero la ejecución completa aislada de 93 solicitudes y 253/253 aserciones está documentada en `docs/evidencias/final/REPORTE_POSTMAN_RUNNER.md`.
 
 ## 21. Conclusiones técnicas
 

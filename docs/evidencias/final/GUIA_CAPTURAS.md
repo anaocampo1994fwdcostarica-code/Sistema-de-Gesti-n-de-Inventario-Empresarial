@@ -11,7 +11,9 @@
 7. Confirmar el nombre exacto antes de copiar el archivo a esta carpeta.
 8. Si un modal tiene cambios sin guardar, cancelarlos de forma segura antes de continuar.
 
-## Capturas requeridas
+## Capturas planificadas
+
+La rúbrica no exige por nombre cada uno de estos PNG. El índice definitivo distingue capturas esenciales para la presentación, recomendadas y complementarias.
 
 | Archivo | Acceso y contenido | Funcionalidad demostrada |
 |---|---|---|
@@ -33,7 +35,7 @@
 | `16_mi_cuenta.png` | Navegación → Mi cuenta | Perfil propio; ocultar correo si es personal |
 | `17_diagrama_er.png` | Abrir `docs/diagrama-er.drawio` en diagrams.net y exportar a PNG | 15 tablas, PK, FK y cardinalidades |
 | `18_pruebas_backend.png` | En terminal: definir la base `_test` y ejecutar `npm test` | Resumen real: 30 aprobadas, 0 fallidas |
-| `19_coleccion_postman.png` | Importar la colección y mostrar sus carpetas, variables sin valores sensibles y solicitudes | Colección v2.1 con 80 solicitudes |
+| `19_coleccion_postman.png` | Abrir Postman Runner y mostrar el resumen sin variables sensibles | Colección v2.1 con 93 solicitudes y 253/253 aserciones |
 
 ## Captura de pruebas
 

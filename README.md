@@ -361,7 +361,7 @@ inventario-empresarial/
 ## Estado académico
 
 - **Día 1:** la documentación disponible cubre tema empresarial, justificación, modelado inicial, estructura full stack y evidencia de creación/listado de categorías.
-- **Día 2:** autenticación, ampliación funcional, frontend protegido, pruebas y documentación están implementados. El CRUD literal de todas las entidades se cumple parcialmente debido a restricciones deliberadas de integridad. Faltan capturas reales, exportación PNG del ER y evidencia de ejecución de los nuevos casos Postman.
+- **Día 2:** autenticación, ampliación funcional, frontend protegido, pruebas y documentación están implementados. El CRUD literal de todas las entidades se cumple parcialmente debido a restricciones deliberadas de integridad. La ejecución aislada de Postman está documentada con 253/253 aserciones aprobadas; siguen pendientes las capturas visuales finales y la exportación PNG/PDF del ER.
 
 El análisis detallado y las rutas de evidencia están en [docs/AUDITORIA_ACADEMICA.md](docs/AUDITORIA_ACADEMICA.md).
 

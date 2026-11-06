@@ -65,7 +65,7 @@ La estimación no sustituye la calificación del profesor. Evidencia histórica:
 | Diagrama ER actualizado con Usuario | CUMPLE | `docs/diagrama-er.drawio` contiene `usuarios` y 14 entidades adicionales |
 | CRUD completo de todas las entidades | CUMPLE PARCIALMENTE | existen 15 controladores y cinco rutas nominales, pero algunas escrituras se restringen por seguridad e inmutabilidad |
 | Registro, login, perfil y contraseñas cifradas | CUMPLE | `authController.js`, `authenticate.js` y `usuario.js` |
-| Postman con 400, 401 y 404 | CUMPLE PARCIALMENTE | 93 solicitudes y scripts presentes; faltan respuestas guardadas y evidencia de Runner |
+| Postman con 400, 401 y 404 | CUMPLE | 93 solicitudes, 93 scripts y ejecución aislada con 253/253 aserciones; 6 casos 400, 4 casos 401 y 3 casos 404 |
 | React: login, registro, protección y logout | CUMPLE | `frontend/src/App.jsx`, `AuthContext.jsx`, `RutaProtegida.jsx` y `Navbar.jsx` |
 | Página por entidad | CUMPLE PARCIALMENTE | 13 representaciones de entidad; detalles de compra/venta viven en modales, no en páginas independientes |
 | README de instalación y configuración | CUMPLE | `README.md` actualizado y contrastado con ambos `package.json` |
@@ -124,11 +124,11 @@ La colección actual fue analizada desde `docs/postman/Inventario_Empresarial.po
 | Casos explícitos 400 | 6 | CUMPLE |
 | Casos explícitos 401 | 4 | CUMPLE |
 | Casos explícitos 404 | 3 | CUMPLE |
-| Respuestas guardadas | 0 | NO CUMPLE |
-| Evidencia de Runner actual | no disponible | NO VERIFICABLE |
+| Respuestas guardadas | 0 | NO REQUERIDO por la rúbrica; opcional como evidencia adicional |
+| Evidencia de Runner actual | reporte de ejecución disponible | CUMPLE |
 | Variables sensibles | vacías | CUMPLE |
 
-Los scripts comprueban código exacto, JSON y campos relevantes; login almacena token y las altas guardan IDs. La colección fue validada estructuralmente, pero no se ejecutó durante esta auditoría porque no se confirmó un backend Postman conectado exclusivamente a `inventario_empresarial_test`.
+Los scripts comprueban código exacto, JSON y campos relevantes; login almacena token y las altas guardan IDs. El reporte final documenta una ejecución aislada contra `inventario_empresarial_test`: 93 solicitudes, 253/253 aserciones aprobadas, cero fallos y cero errores de transporte. Esta auditoría documental no repitió esa ejecución.
 
 ## I. Auditoría del frontend
 
@@ -172,7 +172,7 @@ Las rutas públicas son `/login` y `/registro`. Las rutas privadas incluyen dash
 | Aislamiento backend | base terminada en `_test` y guardas contra principal | `backend/test/run-tests.js` |
 | Frontend lint | último resultado documentado exitoso | auditoría previa y `docs/evaluacion_academica_dia1_dia2.md` |
 | Frontend build | último resultado documentado exitoso | auditoría previa y `docs/evaluacion_academica_dia1_dia2.md` |
-| Postman | validación estática correcta; ejecución no realizada | colección actual |
+| Postman | 93 solicitudes y 253/253 aserciones aprobadas | `docs/evidencias/final/REPORTE_POSTMAN_RUNNER.md` |
 
 No se volvió a ejecutar `npm test`, lint ni build durante esta tarea documental.
 
@@ -193,14 +193,14 @@ No se volvió a ejecutar `npm test`, lint ni build durante esta tarea documental
 
 - Las 19 capturas descritas en `docs/evidencias/final/GUIA_CAPTURAS.md`.
 - PNG o PDF legible del diagrama ER.
-- Captura de Postman Runner con 400, 401 y 404 aprobados.
+- Captura visual de Postman Runner; el resultado textual verificable sí está disponible.
 - Respuestas guardadas en Postman, si el profesor las exige.
 - Evidencia reciente de `npm test`, lint y build en la entrega final.
 
 ## M. Riesgos académicos
 
 1. **Alto:** la frase “CRUD completo de todas las entidades” puede interpretarse literalmente; existencias, movimientos, ajustes y usuarios tienen operaciones restringidas.
-2. **Alto:** no existe evidencia visual de ejecución de los nuevos casos Postman.
+2. **Medio:** no existe captura visual del Runner, aunque sí existe un reporte textual completo de la ejecución.
 3. **Medio:** detalles de compras y ventas no tienen páginas React independientes.
 4. **Medio:** no hay exportación PNG/PDF del ER.
 5. **Medio:** el estado aplicado de las 17 migraciones no se verificó en MySQL durante esta auditoría.
@@ -210,7 +210,7 @@ No se volvió a ejecutar `npm test`, lint ni build durante esta tarea documental
 
 | Prioridad | Acción | Resultado esperado |
 |---:|---|---|
-| 1 | Ejecutar Postman Runner contra una base `_test` y capturar resultados | evidencia directa de 400/401/404 |
+| 1 | Obtener una captura real del resultado ya reproducible en Postman Runner | reforzar la evidencia visual de 400/401/404 |
 | 2 | Consultar al profesor sobre CRUD restringido por integridad | criterio de evaluación explícito |
 | 3 | Obtener las 19 capturas reales | cerrar evidencia visual |
 | 4 | Exportar el ER a PNG/PDF | diagrama legible en la entrega |
@@ -231,7 +231,8 @@ No se volvió a ejecutar `npm test`, lint ni build durante esta tarea documental
 - [x] Colección con casos 400, 401 y 404.
 - [x] README y PROYECTO actualizados.
 - [ ] Confirmar aceptación académica del CRUD restringido.
-- [ ] Ejecutar y capturar Postman Runner.
+- [x] Ejecutar Postman Runner en entorno aislado y documentar resultados.
+- [ ] Obtener captura visual del Runner, si el profesor la exige.
 - [ ] Capturar las 19 pantallas reales.
 - [ ] Exportar el ER.
 - [ ] Ejecutar validaciones finales antes del commit.
@@ -241,4 +242,4 @@ No se volvió a ejecutar `npm test`, lint ni build durante esta tarea documental
 
 **Día 1: CUMPLE**, con evidencia documental suficiente para los cuatro criterios y una estimación no vinculante de 100/100.
 
-**Día 2: CUMPLE PARCIALMENTE.** La implementación técnica principal existe, y la colección ya contiene casos negativos y scripts. Persisten riesgos formales por CRUD deliberadamente restringido, páginas no independientes para detalles y falta de evidencia visual/ejecución Postman.
+**Día 2: CUMPLE CON OBSERVACIONES.** La implementación técnica, la autenticación, la colección con casos negativos y las pruebas están respaldadas. Persisten riesgos formales por CRUD deliberadamente restringido, páginas no independientes para detalles y capturas visuales pendientes.
